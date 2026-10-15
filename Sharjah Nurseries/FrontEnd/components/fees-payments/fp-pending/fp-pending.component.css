@@ -1,0 +1,377 @@
+.ch-name-list{
+    display: flex;
+    align-items: center;
+}
+.ch-name-grade{
+    flex: 1;
+    display: flex;
+}
+.ch-pro-p img{
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+}
+.child-selecter{
+    cursor: pointer;
+}
+.ch-name-list-outer .ch-name-list{
+    border-bottom: solid 1px #f0f1f5;
+    cursor: pointer;
+}
+.ch-name-list-outer .ch-name-list:hover{
+    background: #FAFBFC;
+}
+.selected-child{
+    background: #FAFBFC;
+}
+.ch-name-grade label{
+    margin-bottom: 0;
+}
+.payment-sep{
+    color: #9BA7B1;
+    font-weight: 400;
+}
+.payment-c{
+    color: #9BA7B1;
+    font-size: 16px;
+    font-weight: 400;
+}
+.payment-header-n{
+    background: #FAFBFC !important;
+    border-top: 0;
+}
+.fee-payment-table-n tbody td{
+    text-align: left;
+    padding-top: 15px !important;
+    padding-bottom: 15px !important;
+}
+.fee-payment-table-n th:first-child, .fee-payment-table-n td:first-child {
+    padding-left: 15px !important;
+}
+.fee-payment-table-n th:last-child, .fee-payment-table-n td:last-child {
+    padding-right: 15px !important;
+}
+
+::ng-deep .fee-payment-table-n .p-datatable-tbody{
+    font-family: 'poppins', sans-serif !important;
+}
+::ng-deep [dir='RTL'] .fee-payment-table-n .p-datatable-tbody{
+    font-family: 'Droid Arabic Kufi' !important;
+}
+::ng-deep [dir='RTL'] .fee-payment-table-n .p-datatable-thead{
+    font-family: 'Droid Arabic Kufi' !important;
+}
+::ng-deep .fee-payment-table-n .p-datatable-thead tr th{
+    background: #FAFBFC !important;
+    border-top: 0;
+    color: #2a2a2a !important;
+    font-weight: 600 !important;
+    font-size: 15px !important;
+}
+
+.month-range-p{
+    display: flex;
+}
+.month-range-p li label{
+    font-size: 12px;
+    display: block;
+    margin-bottom: 0;
+}
+.month-range-p li {
+   flex-grow: 1;
+   text-align: center;
+   position: relative;
+   z-index: 1;
+   padding-top: 5px;
+padding-bottom: 5px;
+}
+.month-range-p li span{
+    font-size: 10px;
+    display: block;
+    color: #AAAAAA;
+}
+.advance-payment-d {
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+    background: #fff;
+    border-bottom: solid 1px #f0f1f5;
+    border-top: solid 1px #f0f1f5;
+}
+.month-range-p li.active-month::after{
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 40px;
+    height: 40px;
+    background: #7bccc6;
+    z-index: -1;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+}
+.month-range-p li.active-month label, .month-range-p li.active-month span{
+    color: #fff;
+}
+
+
+.accordion-button{
+    background: none;
+}
+.accordion-button.collapsed{
+    background: none;
+}
+
+.indiv-kid-payment{
+    border: 1px solid #cecece;
+    margin: 10px;
+    border-radius: 15px;
+    overflow: hidden;
+}
+
+/* For horizontal slider */
+
+::ng-deep .ngx-slider-selected .ngx-slider-tick-legend {
+    color: white !important;
+
+}
+::ng-deep .ngx-slider-selected:last-of-type .ngx-slider-tick-legend {
+    color: white !important;
+}
+
+::ng-deep .ngx-slider .ngx-slider-pointer.ngx-slider-active {
+    z-index: 1;
+}
+
+::ng-deep .ngx-slider .ngx-slider-bubble{
+    display: none !important;
+}
+::ng-deep .ngx-slider .ngx-slider-bar-wrapper{
+   /* pointer-events: none !important; */
+}
+
+::ng-deep .ngx-slider .ngx-slider-tick-legend {
+    position: absolute !important;
+    top: -10px !important;
+    transform: translate(-50%) !important;
+    max-width: 50px !important;
+    pointer-events: none;
+    white-space: normal !important;
+    font-size: 9px !important;
+}
+
+::ng-deep .ngx-slider .ngx-slider-pointer {
+    cursor: pointer !important;
+    width: 50px !important;
+    height: 50px !important;
+    top: -25px !important;
+    background-color: #51d0b6 !important;
+    z-index: 1 !important;
+    margin-left: -9px !important;
+    border-radius: 50% !important;
+}
+
+::ng-deep .ngx-slider .ngx-slider-pointer:after {
+    content: "" !important;
+    width: 8px !important;
+    height: 8px !important;
+    position: absolute !important;
+    top: 23px !important;
+    left: 21px !important;
+    border-radius: 4px !important;
+    background: none !important;
+}
+
+::ng-deep .ngx-slider .ngx-slider-bar {
+    left: 0 !important;
+    width: 100% !important;
+    height: 40px !important;
+    top: -2px !important;
+    z-index: 1 !important;
+    background: #d8e0f3 !important;
+    border-radius: 2px !important;
+}
+
+::ng-deep .ngx-slider .ngx-slider-bar.ngx-slider-selection{
+    background: #58b6d8 !important;
+    /* pointer-events: none !important; */
+}
+
+::ng-deep .ngx-slider .ngx-slider-tick{
+    background: none !important;
+    pointer-events: none;
+    line-height: 27px !important;
+}
+
+::ng-deep .ngx-slider .ngx-slider-bar{
+    background: none !important;
+}
+
+
+/* For Vertical slider */
+
+::ng-deep .ngx-slider.vertical .ngx-slider-selected .ngx-slider-tick-legend {
+    color: white !important;
+}
+::ng-deep .ngx-slider.vertical .ngx-slider-selected:last-of-type .ngx-slider-tick-legend {
+    color: white !important;
+}
+
+::ng-deep .ngx-slider.vertical .ngx-slider-pointer.ngx-slider-active {
+    z-index: 1;
+}
+
+::ng-deep .ngx-slider.vertical .ngx-slider-bubble{
+    display: none !important;
+}
+
+::ng-deep .ngx-slider.vertical .ngx-slider-tick-legend {
+    top: auto !important;
+    right: -8px !important;
+    transform: translateY(-28%) !important;
+    max-width: none !important;
+    white-space: nowrap !important;
+    font-size: 8px !important;
+}
+
+::ng-deep .ngx-slider.vertical .ngx-slider-pointer {
+    cursor: pointer !important;
+    width: 50px !important;
+    height: 50px !important;
+    top: unset !important;
+    background-color: #5fe0c5 !important;
+    z-index: 1 !important;
+    margin-left: -9px !important;
+    border-radius: 50% !important;
+}
+
+::ng-deep .ngx-slider.vertical .ngx-slider-pointer:after {
+    content: "" !important;
+    width: 8px !important;
+    height: 8px !important;
+    position: absolute !important;
+    top: 23px !important;
+    left: 21px !important;
+    border-radius: 4px !important;
+    background: none !important;
+}
+
+::ng-deep .ngx-slider.vertical .ngx-slider-bar {
+    left: 0 !important;
+    width: 100% !important;
+    z-index: 1 !important;
+    height: unset !important;
+    top: 0 !important;
+    background: #d8e0f3 !important;
+    border-radius: 2px !important;
+}
+
+::ng-deep .ngx-slider.vertical .ngx-slider-bar.ngx-slider-selection{
+    background: #7ac6e1 !important;
+}
+
+::ng-deep .ngx-slider.vertical .ngx-slider-tick{
+    background: none !important;
+    pointer-events: none;
+}
+
+::ng-deep .ngx-slider.vertical .ngx-slider-bar{
+    background: none !important;
+}
+
+.verticalSliderContainer{
+    min-height: 550px;
+}
+.custom-slider {
+    position: relative;
+    width: 100%;
+  }
+
+  .hide-left-tick {
+    display: none;
+  }
+
+  .slider-handle:first-child {
+    pointer-events: none; /* Disable interaction with the left handle */
+  }
+  ::ng-deep .ngx-slider .ngx-slider-pointer-min{
+    pointer-events: none;
+}
+  ::ng-deep .ngx-slider.vertical .ngx-slider-pointer-min{
+    pointer-events: none;
+}
+.box-shadow-none{
+    box-shadow: none !important;
+}
+::ng-deep .ngx-slider.animate .ngx-slider-pointer:first-child {
+    pointer-events: none !important;
+}
+.mobile-view-card.select-m-card{
+    /* border: solid 1px #689DD3; */
+}
+.mobile-view-card{
+    background: #F9FAFC;
+}
+::ng-deep .ngx-slider .ngx-slider-bar{
+    background: #edeef0 !important;
+    margin-left: -9px !important;
+    border-radius: 16px !important;
+}
+
+::ng-deep .ngx-slider .month-label {
+    font-size: 10px !important;
+}
+/* @media screen and (max-width: 600px){ */
+/* } */
+
+.wallet-container {
+    display: flex;
+    align-items: center;
+    width: 6.5rem;
+  }
+
+  .title-icon {
+    margin-right: 5px;
+  }
+
+
+
+  @media screen and (max-width: 768px) {
+
+    .title-icon {
+      margin-right: 10px;
+    }
+    .wallet-container {
+        display: flex;
+        align-items: center;
+        width: 38%;
+      }
+  }
+
+.currencyLabel{
+    font-size: 12px;
+    margin-left: 2px;
+    margin-top: 2px;
+}
+.accordion-disabled {
+    opacity: 0.8;
+    pointer-events: none;
+}
+::ng-deep .nd23-stud-list-checkbox .p-checkbox .p-checkbox-box.p-highlight {
+    background: var(--primary) !important;
+    border-color: var(--primary) !important;
+}
+.wallet-balance{
+    display: flex;
+    align-items: center;
+    width: 2rem;
+
+}
+.pcheckbox-width{
+    width: 7%;
+}
+.disabled-checkbox {
+    cursor: not-allowed;
+}
+.colorful-title {
+    color: red;
+}

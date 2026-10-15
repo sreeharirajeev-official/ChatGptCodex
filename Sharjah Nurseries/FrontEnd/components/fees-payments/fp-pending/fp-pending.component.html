@@ -1,0 +1,699 @@
+
+<div class="card">
+    <div class="card-header px-3 py-3" style=" min-height: 67px; ">
+        <h5 class="card-title">
+
+            {{'Payments Due' | translate}}
+
+            <span class="payment-sep" *ngIf="screenW>599"> | </span>
+            <span class="payment-c" *ngIf="screenW>599">{{selectedPaymentsCount()}} {{'Payments' | translate}}</span>
+
+        </h5>
+
+        <div *ngIf="getGrandTotal() > 0">
+            <span>{{'Total' | translate}} : <b [ngbTooltip]="tooltipTemplate">{{getGrandTotal() | number: '1.2-2'}}</b></span>
+            <ng-template #tooltipTemplate>
+                <div>{{'Pay' | translate}}: {{ getGrandTotal() - getAdvancePaymentAmount() | number: '1.2-2'}}</div>
+                <div>{{'Advance' | translate}}: {{ getAdvancePaymentAmount() | number: '1.2-2'}}</div>
+            </ng-template>
+            <button *ngIf="screenW>599" class="btn btn-rounded btn-primary btn-xs pay-now-btn" (click)="visibleInvoiceDetails = true;toggleMoreFilter($event);closeModal()"> {{'Pay now' | translate}} </button>
+        </div>
+
+    </div>
+    <div class=" px-3 pt-2" *ngIf="screenW<=600">
+        <span class="payment-c">{{selectedPaymentsCount()}} {{'Payments' | translate}}</span>
+        <button *ngIf="getGrandTotal() > 0" style="float: inline-end;" class="btn btn-rounded btn-primary btn-xs pay-now-btn" (click)="visibleInvoiceDetails = true;toggleMoreFilter($event);closeModal()"> {{'Pay now' | translate}} </button>
+    </div>
+    <div class=" px-3 pt-2"  *ngIf="totalPaymentCount>0">
+        <span class="payment-c ms-2" style="cursor: default;"  >{{'Select All' | translate}}
+            <!-- <p-checkbox class="ms-2 me-2" [(ngModel)]="isSelectAllRow" (onChange)="onSelectAll($event)" [binary]="true" inputId="binary">
+                <i [ngClass]="isSelectAllRow ? 'bi bi-check2-square custom-selectall select-all-icon' : 'bi bi-app custom-deselectall deselect-all-icon'" style="cursor: pointer;"></i>
+              </p-checkbox> -->
+        </span>
+        <span class="ms-1">
+
+            <i  [ngClass]="isSelectAllRow ? 'bi bi-check2-square custom-selectall select-all-icon': 'bi bi-app custom-deselectall deselect-all-icon'" style="cursor: pointer;" (click)="onSelectAll($event)" ></i>
+        </span>
+
+
+    </div>
+    <div class="pt-4 text-center" *ngIf="!SelectedStudents || SelectedStudents.length <= 0">
+        <div class="card-body">
+            <div class="text-center">
+                <span class="d-block"><b>{{"SELECT STUDENTS" | translate}}</b></span>
+              </div>
+              <div class="my-4">
+                <i class="flaticon-381-user-9 fa-6x application-icon-color"></i>
+              </div>
+        </div>
+    </div>
+    <div *ngIf="SelectedStudents && SelectedStudents.length > 0">
+        <div *ngFor="let student of SelectedStudents" class="indiv-kid-payment">
+            <div class="card mb-3 box-shadow-none">
+             <!-- *ngIf="student?.PendingPayments.length>0"> -->
+                <div class="card-header px-3 py-1" >
+                    <span><b style="color: #000; font-size: medium;"> {{ selectedLanguage == 'en' ? student?.FullNameInEnglish : student?.FullNameInArabic }} </b></span>
+                    <div class="wallet-container fs-14">
+                        <span>
+                          <i class="fa-solid fa-wallet title-icon" style="cursor: pointer;" ngbTooltip="{{'Wallet' | translate}}"></i>
+                        </span>
+                        <div class="d-flex">
+                        <span >
+                          {{student?.Wallet?.Balance ? student?.Wallet?.Balance : 0 | number: '1.2-2'}}
+                        </span>
+                        <span class="constant-text currencyLabel">{{'AED' | translate}}</span>
+                        </div>
+                      </div>
+
+
+                </div>
+                <div class="card-body p-0">
+                    <div class="row m-0">
+                        <div class="col-12 p-0">
+                            <!-- Mobile view -->
+                            <div *ngIf="screenW<600" class="pay-mobile-view">
+                                <div class="row" *ngIf="student?.pendingPayments?.length > 0">
+                                    <div class="col-12" *ngFor="let payment of student.pendingPayments">
+                                        <div class="card mobile-view-card select-m-card">
+                                            <div class="card-header">
+                                                <span><p-checkbox class="nd23-stud-list-checkbox" (onChange)="onStudentPaymentChecked($event,student,payment)" [(ngModel)]="payment.isCheckedRow" [binary]="true"></p-checkbox></span>
+                                                <span>
+                                                    <label class="mb-0">{{'Due date' | translate}} :</label>
+                                                    <span class="d-inline-block ms-2"> {{ payment?.DueDate | date: 'dd/MM/yyyy' }} </span>
+                                                </span>
+                                            </div>
+                                            <div class="card-body">
+                                                <div class="row">
+                                                    <div [ngClass]="payment?.InvoiceNo && payment?.InvoiceNo != '' ? 'col-6' : 'col-12'">
+                                                        <div class="form-group form-view">
+                                                            <label>{{'Fee type' | translate}}</label>
+                                                            <span> {{ selectedLanguage == 'ar' ? payment?.FeeSetting?.FeeType?.TypeInArabic : payment?.FeeSetting?.FeeType?.Type }} <i *ngIf="isLateFee(payment)" (click)="openLateStayFeeModal($event, student)" class="fa-solid fa-circle-info secondary-color"></i> </span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-6" *ngIf="payment?.InvoiceNo && payment?.InvoiceNo != ''">
+                                                        <div class="form-group form-view">
+                                                            <label>{{'Invoice No' | translate}}</label>
+                                                            <span> {{ payment?.InvoiceNo }} </span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-6">
+                                                        <div class="form-group form-view">
+                                                            <label>{{'Description' | translate}}</label>
+                                                            <span>{{ selectedLanguage == 'ar' ? payment?.DescriptionInArabic : payment?.Description }}</span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-6">
+                                                        <div class="form-group form-view">
+                                                            <label>{{'Fee Due (AED)' | translate}}</label>
+                                                            <span> {{ payment?.TotalFee | number: '1.2-2' }} </span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row" *ngIf="!payment?.IsInstallmentRequestPending && !payment?.IsInstallmentPayment && payment?.FeeSetting?.IsInstallmentAvailable && payment?.FeeSetting?.FeeSettingInstallmentDetails && payment?.FeeSetting?.FeeSettingInstallmentDetails?.length > 0">
+                                                    <div class="col-12">
+                                                        <div class="d-flex align-items-center justify-content-end">
+                                                            <button class="btn btn-rounded btn-outline-primary btn-sm" (click)="convertToEMI($event, payment, student)"> {{'Convert to EMI' | translate}} </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row" *ngIf="student?.pendingPayments?.length == 0">
+                                    <div class="col-12">
+                                        <div class="text-center">
+                                            <span class="d-block pt-3">{{"No Pending Payments" | translate}}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Big screen view -->
+                            <div *ngIf="screenW>=600" class="table-responsive">
+                                <p-table
+                                    [value]="student?.PendingPayments"
+                                    dataKey="Id"
+                                    class="table display mb-4 admin-applications-table fee-payment-table fee-payment-table-n"
+                                    selectionMode="multiple"
+                                    [(selection)]="student.selectedRowData"
+                                    (onRowSelect)="onRowSelect($event, student)"
+                                    (onRowUnselect)="onRowUnselect($event, student); student.expanded = false; student.fromMonth = 0; student.toMonth = 0; student.AdvAmount = 0;"
+                                    >
+                                    <ng-template pTemplate="header">
+                                        <tr style="cursor: default;">
+                                            <th style="cursor: default; width: 5%;"></th>
+
+                                            <th style="cursor: default; width: 15%;"
+                                                [ngClass]="selectedLanguage == 'ar' ? 'text-end' : ''">
+                                                {{ 'Fee Type' | translate }}
+                                            </th>
+
+                                            <th style="cursor: default; width: 20%;"
+                                                [ngClass]="selectedLanguage == 'ar' ? 'text-end' : ''">
+                                                {{ 'Payment description' | translate }}
+                                            </th>
+
+                                            <th style="cursor: default; width: 15%;">
+                                                {{ 'Invoice No' | translate }}
+                                            </th>
+
+                                            <th style="cursor: default; width: 15%;">
+                                                {{ 'Fee Due (AED)' | translate }}
+                                            </th>
+
+                                            <th style="cursor: default; width: 10%;">
+                                                {{ 'Due date' | translate }}
+                                            </th>
+
+                                            <th style="cursor: default; width: 25%;">
+                                                {{ 'Action' | translate }}
+                                            </th>
+                                        </tr>
+                                    </ng-template>
+
+                                    <ng-template pTemplate="body" let-payment>
+                                        <tr [pSelectableRow]="payment" style="cursor: default;">
+
+                                            <td style="cursor: default; width: 5%;">
+                                                <p-checkbox
+                                                    class="ms-2 me-2 nd23-stud-list-checkbox"
+                                                    [(ngModel)]="payment.isCheckedRow"
+                                                    [binary]="true">
+                                                </p-checkbox>
+                                            </td>
+
+                                            <td
+                                                style="cursor: default; width: 20%;"
+                                                [ngClass]="selectedLanguage == 'ar' ? 'text-end' : ''">
+                                                {{ selectedLanguage == 'ar'
+                                                    ? payment?.FeeSetting?.FeeType?.TypeInArabic
+                                                    : payment?.FeeSetting?.FeeType?.Type }}
+                                            </td>
+
+                                            <td
+                                                *ngIf="selectedLanguage == 'ar'"
+                                                style="cursor: default; text-align: right; width: 25%;">
+                                                {{ payment?.DescriptionInArabic }}
+                                            </td>
+
+                                            <td
+                                                *ngIf="selectedLanguage == 'en'"
+                                                style="cursor: default; text-align: left; width: 25%;">
+                                                {{ payment?.Description }}
+                                            </td>
+
+                                            <td style="cursor: default; text-align: left; width: 15%;">
+                                                {{ payment?.InvoiceNo }}
+                                            </td>
+
+                                            <td style="cursor: default; width: 15%;">
+                                                {{ payment?.TotalFee | number: '1.2-2' }}
+
+                                                <i
+                                                    *ngIf="isLateFee(payment)"
+                                                    (click)="openLateStayFeeModal($event, student)"
+                                                    class="fa-solid fa-circle-info secondary-color">
+                                                </i>
+                                            </td>
+
+                                            <td style="cursor: default; width: 10%;">
+                                                {{ payment?.DueDate | date: 'dd/MM/yyyy' }}
+                                            </td>
+
+                                            <td style="cursor: default; width: 15%;">
+
+                                                <!-- <button
+                                                    *ngIf="payment?.FeeSetting?.IsInstallmentAvailable &&
+                                                        payment?.FeeSetting?.FeeSettingInstallmentDetails?.length > 0"
+                                                    type="button"
+                                                    class="btn btn-sm btn-outline-primary"
+                                                    (click)="convertToEMI($event, payment, student)">
+                                                    <i class="fa-solid fa-money-bill-transfer me-1"></i>
+                                                    {{ 'Convert to EMI' | translate }}
+                                                </button> -->
+
+                                                <button *ngIf="!payment?.IsInstallmentRequestPending && !payment?.IsInstallmentPayment && payment?.FeeSetting?.IsInstallmentAvailable && payment?.FeeSetting?.FeeSettingInstallmentDetails && payment?.FeeSetting?.FeeSettingInstallmentDetails?.length > 0"
+                                                class="btn btn-rounded btn-outline-primary btn-xs" (click)="convertToEMI($event, payment, student)"> {{'EMI' | translate}} </button>
+
+                                            </td>
+
+                                        </tr>
+                                    </ng-template>
+                                    <ng-template pTemplate="emptymessage">
+                                        <tr class="payment-empty-msg">
+                                            <td colspan="7">
+                                                <div class="text-center">
+                                                    <span class="d-block">{{"No Pending Payments" | translate}}</span>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </ng-template>
+                                </p-table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div ngbAccordion *ngIf="student?.AllAdvancePayments?.length > 0" (click)="isAccordianDisabled(student) ? showPendingPaymentsWarning(student) : student.expanded = true">
+                <div ngbAccordionItem [collapsed]="!student.expanded">
+                    <h2 ngbAccordionHeader class="p-0" [ngClass]="{'accordion-disabled': isAccordianDisabled(student)}">
+                        <button ngbAccordionButton style="color: var(--primary);">{{"Advance Payment" | translate}}
+                            <span (click)="handleNgxSliderHelpClick($event)" class="ms-2 badge badge-info badge-xs" [ngbTooltip]="ngxSliderHelp" triggers="hover click:blur" container="body">
+                                <i class="fa fa-info"></i>
+                            </span>
+                        </button>
+                        <ng-template #ngxSliderHelp>
+                            <div>
+                                <span>
+                                    {{"NgxSliderHelp" | translate}}
+                                </span>
+                            </div>
+                        </ng-template>
+                    </h2>
+                    <div ngbAccordionCollapse>
+                        <div ngbAccordionBody>
+                            <ng-template>
+
+                                <div class="row">
+                                    <!-- <div *ngIf="screenW<600" class="col-12"> -->
+                                    <!-- <div *ngIf="screenW<600" class="col-1 verticalSliderContainer">
+                                        <ngx-slider  [(value)]="student.fromMonth" [(highValue)]="student.toMonth" (userChange)="onSliderValueChanged($event, student)" [options]="getVerticalOptions(student)"></ngx-slider>
+
+                                    </div> -->
+                                    <div class = "col-12">
+                                        <ngx-slider class="exclude-swipe" *ngIf="screenW>=600 && lang" [(value)]="student.fromMonth" [(highValue)]="student.toMonth" (userChange)="onSliderValueChanged($event, student)" [options]="getLeftOptions(student)"></ngx-slider>
+                                        <ngx-slider class="exclude-swipe" *ngIf="screenW>=600 && !lang" [(value)]="student.fromMonth" [(highValue)]="student.toMonth" (userChange)="onSliderValueChanged($event, student)" [options]="getRightOptions(student)"></ngx-slider>
+                                        <ngx-slider class="exclude-swipe" *ngIf="screenW<600"  [(value)]="student.fromMonth" [(highValue)]="student.toMonth" (userChange)="onSliderValueChanged($event, student)" [options]="getVerticalOptions(student)"></ngx-slider>
+
+                                        <!-- Mobile view -->
+                                        <div *ngIf="screenW<600" class="pay-mobile-view">
+                                            <div class="row" *ngIf="student?.advancePaymentsList?.length > 0">
+                                                <!-- <div class="col-12">
+                                                    <span class="payment-c" style="cursor: default;"  >{{'Select All' | translate}}</span>
+                                                    <i  [ngClass]="student.isAllAdvancePaymentsChecked ? 'bi bi-check2-square custom-selectall select-all-icon px-2': 'bi bi-app custom-deselectall deselect-all-icon px-2'" style="cursor: pointer;" (click)="student.isAllAdvancePaymentsChecked = !student.isAllAdvancePaymentsChecked; selectAllAdvancePayments($event, student);" ></i>
+                                                </div> -->
+                                                <div class="col-12">
+                                                    <div class="card mobile-view-card select-m-card">
+                                                        <div class="card-header" style="justify-content:unset">
+                                                            <!-- <span><p-checkbox [disabled]="disableCheckBox(student)" [(ngModel)]="student.isAllAdvancePaymentsChecked" (onChange)="selectAllAdvancePayments($event, student)" [binary]="true"></p-checkbox></span> -->
+                                                            <span>
+                                                                <label class="mb-0 ms-2">{{'Advance Payment' | translate}} :</label>
+                                                            </span>
+                                                        </div>
+                                                        <div class="card-body">
+                                                            <div class="row">
+                                                                <div class="form-group form-view col-6">
+                                                                    <label>{{'Amount' | translate}}</label>
+                                                                </div>
+                                                                <div class="form-group form-view col-6">
+                                                                    <span> {{ student?.AdvAmount | number: '1.2-2' }} {{"AED" | translate}} </span>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <!-- <div class="col-12" *ngFor="let payment of student.advancePaymentsList">
+                                                    <div class="card mobile-view-card select-m-card">
+                                                        <div class="card-header">
+                                                            <span><p-checkbox [disabled]="disableCheckBox(student)" [(ngModel)]="payment.isCheckedRow"  (onChange)="onChangeAdvancePayment($event, payment,student,true)" [binary]="true"></p-checkbox></span>
+                                                            <span>
+                                                                <label class="mb-0">{{'Due date' | translate}} :</label>
+                                                                <span class="d-inline-block ms-2"> {{ payment?.DueDate | date: 'dd/MM/yyyy' }} </span>
+                                                            </span>
+                                                        </div>
+                                                        <div class="card-body">
+                                                            <div class="row">
+                                                                <div [ngClass]="payment?.InvoiceNo && payment?.InvoiceNo != '' ? 'col-6' : 'col-12'">
+                                                                    <div class="form-group form-view">
+                                                                        <label>{{'Fee type' | translate}}</label>
+                                                                        <span> {{ selectedLanguage == 'ar' ? payment?.FeeSetting?.FeeType?.TypeInArabic : payment?.FeeSetting?.FeeType?.Type }} </span>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-6" *ngIf="payment?.InvoiceNo && payment?.InvoiceNo != ''">
+                                                                    <div class="form-group form-view">
+                                                                        <label>{{'Invoice No' | translate}}</label>
+                                                                        <span> {{ payment?.InvoiceNo }} </span>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-6">
+                                                                    <div class="form-group form-view">
+                                                                        <label>{{'Description' | translate}}</label>
+                                                                        <span>{{ selectedLanguage == 'ar' ? payment?.DescriptionInArabic : payment?.Description }}</span>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-6">
+                                                                    <div class="form-group form-view">
+                                                                        <label>{{'Fee Due (AED)' | translate}}</label>
+                                                                        <span> {{ payment?.Amount | number: '1.2-2' }} </span>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div> -->
+                                            </div>
+                                            <div class="row" *ngIf="student?.advancePaymentsList?.length == 0">
+                                                <div class="col-12">
+                                                    <div class="text-center">
+                                                        <span class="d-block">{{"No Advance Payments" | translate}}</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!-- Big screen view -->
+                                        <div *ngIf="screenW>=600" class="mb-3">
+                                            <div class="card-body p-0">
+                                                <div class="row m-0">
+                                                    <div class="col-12 p-0">
+                                                        <div class="table-responsive">
+
+                                                            <table class="w-100">
+                                                                <tr style="cursor: default;">
+                                                                    <!-- <td style="cursor: default; width: 5%;"> <p-checkbox class="ms-2 me-2" [disabled]="disableCheckBox(student)" [(ngModel)]="student.isAllAdvancePaymentsChecked" (onChange)="selectAllAdvancePayments($event, student)" [binary]="true"></p-checkbox></td> -->
+                                                                    <td style="cursor: default; width: 70%;">{{"Advance Payment" | translate}}</td>
+                                                                    <td style="cursor: default; width: 30%;" class="text-end-ltr text-end-rtl pe-3">{{"Amount" | translate}}: {{student.AdvAmount | number: '1.2-2'}} {{"AED" | translate}}</td>
+                                                                </tr>
+                                                            </table>
+
+
+                                                            <!-- <p-table
+                                                                [value]="student.advancePaymentsList"
+                                                                class="table display mb-4 admin-applications-table fee-payment-table fee-payment-table-n"
+                                                                selectionMode="multiple"
+                                                                [(selection)]="student.selectedPaymentsPerMonth"
+                                                                (onRowSelect)="disableCheckBox(student) ? null : onAdvanceRowSelect($event, student)"
+                                                                (onRowUnselect)="disableCheckBox(student) ? null : onAdvanceRowUnselect($event, student)"
+                                                                >
+                                                                <ng-template pTemplate="header"  class="payment-header-n">
+                                                                        <tr style="cursor: default;">
+                                                                            <th style="cursor: default; width: 5%;"><p-checkbox [disabled]="disableCheckBox(student) || student?.advancePaymentsList?.length == 0" class="ms-2 me-2" [(ngModel)]="student.isAllAdvancePaymentsChecked" (onChange)="selectAllAdvancePayments($event, student)" [binary]="true"></p-checkbox> </th>
+                                                                            <th style="cursor: default; width: 20%;" [ngClass]="selectedLanguage == 'ar' ? 'text-end' : ''"> {{ 'Fee Type' | translate }} </th>
+                                                                            <th style="cursor: default; width: 30%;" [ngClass]="selectedLanguage == 'ar' ? 'text-end' : ''"> {{ 'Payment description' | translate }} </th>
+                                                                            <th style="cursor: default; width: 15%;"> {{ 'Invoice No' | translate }} </th>
+                                                                            <th style="cursor: default; width: 15%;"> {{ 'Fee Due (AED)' | translate }} </th>
+                                                                            <th style="cursor: default; width: 15%;"> {{ 'Due date' | translate }} </th>
+                                                                        </tr>
+                                                                </ng-template>
+                                                                <ng-template pTemplate="body" let-payment>
+                                                                    <ng-container>
+                                                                        <tr [pSelectableRow]="disableCheckBox(student) ? null : payment" style="cursor: default;">
+                                                                            <td style="cursor: default; width: 5%;"> <p-checkbox class="ms-2 me-2" [disabled]="disableCheckBox(student)" [(ngModel)]="payment.isCheckedRow"  (onChange)="onChangeAdvancePayment($event, payment,student)" [binary]="true"></p-checkbox></td>
+                                                                            <td style="cursor: default; width: 20%;" [ngClass]="selectedLanguage == 'ar' ? 'text-end' : ''"> {{ selectedLanguage == 'ar' ? payment?.FeeSetting?.FeeType?.TypeInArabic : payment?.FeeSetting?.FeeType?.Type }}</td>
+                                                                            <td *ngIf="selectedLanguage == 'ar'" style="cursor: default;text-align: right; width: 30%;"> {{ payment?.DescriptionInArabic }} </td>
+                                                                            <td *ngIf="selectedLanguage == 'en'" style="cursor: default;text-align: left; width: 30%;"> {{ payment?.Description }} </td>
+                                                                            <td style="cursor: default;text-align: left; width: 15%;"> {{ payment?.InvoiceNo }} </td>
+                                                                            <td style="cursor: default; width: 15%;"> {{ payment?.Amount | number: '1.2-2' }} </td>
+                                                                            <td style="cursor: default; width: 15%;"> {{ payment?.DueDate | date: 'dd/MM/yyyy' }} </td>
+                                                                        </tr>
+                                                                    </ng-container>
+                                                                </ng-template>
+                                                                <ng-template pTemplate="emptymessage">
+                                                                    <tr class="payment-empty-msg">
+                                                                        <td colspan="5">
+                                                                            <div class="text-center">
+                                                                                <span class="d-block">{{"No Advance Payments" | translate}}</span>
+                                                                            </div>
+                                                                        </td>
+                                                                    </tr>
+                                                                </ng-template>
+                                                            </p-table> -->
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </ng-template>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<p-dialog
+    closeIcon="btn-close"
+    class="m-sm-w-100 m-md-w-50 m-lg-w-40 m-xl-w-30 m-xxl-w-25"
+    header="{{'Invoice Details' | translate}}"
+    [(visible)]="visibleInvoiceDetails"
+    position="bottomright"
+    (click)="toggleMoreFilter($event)"
+    [style]="{ height: '100vh' }">
+    <div>
+        <div *ngFor="let student of SelectedStudents">
+            <div *ngIf="student?.selectedRowData?.length > 0 || student?.selectedPaymentsPerMonth?.length > 0" class="pay-now-panel-container">
+                <div class="pay-now-panel-header">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <span class="d-block fw-bold">{{selectedLanguage == 'en' ? student?.FullNameInEnglish : student?.FullNameInArabic}}</span>
+                            <span class="d-block">{{student?.ClassName}}</span>
+
+                        </div>
+                        <div class="wallet-container">
+                            <span>
+                              <i class="fa-solid fa-wallet title-icon" style="cursor: pointer;" ngbTooltip="{{'Wallet' | translate}}"></i>
+                            </span>
+                            <div class="d-flex">
+                            <span >
+                              {{student?.Wallet?.Balance ? student?.Wallet?.Balance : 0 | number: '1.2-2'}}
+                            </span>
+                            <span class="constant-text currencyLabel" style="margin-left: 3px; margin-top: 3px;">{{'AED' | translate}}</span>
+                            </div>
+                          </div>
+                        <!-- <div>
+                            <span>June 01 2022</span>
+                        </div> -->
+                    </div>
+                </div>
+                <div class="pay-now-panel-body">
+                    <div *ngFor="let payment of student?.selectedRowData" class="pb-1 mb-2">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <span>{{ selectedLanguage == 'ar' ? payment?.FeeSetting?.FeeType?.TypeInArabic : payment?.FeeSetting?.FeeType?.Type }}</span>
+                            </div>
+                            <div>
+                                <span>{{payment?.Amount | number: '1.2-2'}}</span>
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <span>{{'VAT Amount' | translate}}</span>
+                            </div>
+                            <div>
+                                <span> {{ (payment?.VATAmount ?? 0) | number:'1.2-2' }} </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-between pb-1 mb-2" *ngIf="isAdvancePaymentAdded(student)">
+
+                        <div>
+                            <span>{{"Advance Payment" | translate}}</span>
+                        </div>
+                        <div>
+                            <span>{{student?.AdvAmount | number: '1.2-2'}}</span>
+                        </div>
+
+                        <!-- <div class="adv-payment-panel-header p-2">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <span class="d-block fw-bold">{{"Advance Payment" | translate}}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="p-1">
+                            <ng-container *ngFor="let payment of student.selectedPaymentsPerMonth" >
+                            <div class="d-flex justify-content-between pb-1" *ngIf="payment && payment?.Id">
+                                    <div>
+                                        <span>{{payment?.FeeSetting?.FeeType?.Type}} ({{payment?.DueDate | date: 'MMM yyyy'}})</span>
+                                    </div>
+                                    <div>
+                                        <span>{{payment?.Amount | number: '1.2-2'}}</span>
+                                    </div>
+                                </div>
+                            </ng-container>
+                        </div> -->
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <span>{{'Discount' | translate}}</span>
+                        </div>
+                        <div>
+                            <span>0.00</span>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="d-flex justify-content-between pay-now-panel-footer">
+                    <div>
+                        <span>{{'Total' | translate}}</span>
+                    </div>
+                    <div>
+                        <span>{{getTotalForIndividualStudent(student) | number: '1.2-2'}}</span>
+                    </div>
+                </div>
+
+                <div  class="d-flex justify-content-between pay-now-panel-footer pt-0" *ngIf="student ? (!student?.isUpcoming && student.Wallet?.Balance != undefined && student.Wallet?.Balance != 0) : false">
+                    <div class="d-flex w-75" (click)="showtoastWallet(student)">
+                        <p-checkbox
+                        [class]="student?.isUpcoming || student.Wallet?.Balance === undefined || student.Wallet?.Balance === 0 ? 'disabled-checkbox pcheckbox-width':'pcheckbox-width' "
+                        [class.me-2]="selectedLanguage=='en'"
+                        [class.ms-2]="selectedLanguage=='ar'"
+                        [disabled]="student ? (student?.isUpcoming || student.Wallet?.Balance === undefined || student.Wallet?.Balance === 0) : false"
+                        [(ngModel)]="student.isCheckSelectWalletamount"
+                        (onChange)="onwalletAmount($event,student)"
+                        [binary]="true"
+                        inputId="binary"
+                        >
+                    </p-checkbox>
+                       <span class="px-2">{{'Use Wallet Amount' | translate}}</span>
+
+                    </div>
+
+                    <div>
+                        <span>{{getTotalForIndividualStudentbyWalletBalance(student) | number: '1.2-2'}}</span>
+                    </div>
+                </div>
+
+                <div  class="d-flex justify-content-between pay-now-panel-footer pt-0">
+                    <div>
+                        <span>{{'Total Amount to be Paid' | translate}}</span>
+                    </div>
+                    <div>
+                        <span>{{getTotalForIndividualStudentbyWalletBalances(student) | number: '1.2-2'}}</span>
+                    </div>
+                </div>
+            </div>
+         </div>
+         <button type="button" [disabled]="getGrandTotalAmount() == 0" class="btn btn-rounded btn-sm btn-primary mx-2 w-100" (click)="goToPaymentScreen()">{{'Pay' | translate}} {{getGrandTotalAmount() | number: '1.2-2'}}</button>
+    </div>
+</p-dialog>
+<p-dialog
+    closeIcon="btn-close"
+    header="{{'Late Stay Fee' | translate}}"
+    [(visible)]="visibleLateStayFeeDetails"
+    position="bottomright"
+    [style]="{ width: 'auto', height: '75%' }">
+    <div>
+        <!-- <div *ngFor="let student of SelectedStudents"> -->
+            <div *ngIf="studentSelected?.lateFeePayments?.length > 0">
+                <!-- <ng-container> -->
+                    <div class="pay-now-panel-container">
+                        <div class="pay-now-panel-header">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <span>{{selectedLanguage == 'en' ? studentSelected?.FullNameInEnglish : studentSelected?.FullNameInArabic}}</span>
+                                </div>
+                                <div>
+                                    <span>{{studentSelected?.ClassName}}</span>
+                                    <!-- <span class="d-block text-end">Friday</span>
+                                    <span class="d-block">Checkout : <b>4:30 PM</b></span> -->
+                                </div>
+                            </div>
+                        </div>
+                        <div class="pay-now-panel-body">
+                            <p-table
+                                [value]="studentSelected?.lateFeePayments"
+                                class="table display late-fee-table mb-4 admin-applications-table fee-payment-table fee-payment-table-n">
+                                <ng-template pTemplate="header">
+                                    <tr>
+                                        <th> {{ 'Checkout Date' | translate }} </th>
+                                        <th> {{ 'Checkout Time' | translate }} </th>
+                                        <th> {{ 'Fee' | translate }} </th>
+                                    </tr>
+                                </ng-template>
+                                <ng-template pTemplate="body" let-payment>
+                                    <tr>
+                                        <td> {{ payment?.StudentAttendance?.AttendanceDate | date: 'dd/MM/yyyy' }} </td>
+                                        <td> {{ formatTime(payment?.StudentAttendance?.CheckOutTime) }} </td>
+                                        <td> {{ payment?.Amount }} </td>
+                                    </tr>
+                                </ng-template>
+                            </p-table>
+                            <!-- <div class="d-flex justify-content-between pb-1">
+                                <div>
+                                    <span>{{'Fee' | translate}}</span>
+                                </div>
+                                <div>
+                                    <span>{{payment?.Amount}}</span>
+                                </div>
+                            </div> -->
+                            <!-- <div class="d-flex justify-content-between">
+                                <div>
+                                    <span>Discount</span>
+                                </div>
+                                <div>
+                                    <span>0.00</span>
+                                </div>
+                            </div> -->
+                        </div>
+                        <div class="d-flex justify-content-between pay-now-panel-footer">
+                            <div>
+                                <span>{{'Total' | translate}}</span>
+                            </div>
+                            <div>
+                                <span>{{getTotalForLateFee(studentSelected?.lateFeePayments)}}</span>
+                            </div>
+                        </div>
+                    </div>
+                <!-- </ng-container> -->
+            </div>
+         <!-- </div> -->
+         <!-- <button type="button" class="btn btn-rounded btn-sm btn-primary mx-2 w-100" (click)="goToPaymentScreen()">Pay {{getGrandTotal()}}</button> -->
+    </div>
+</p-dialog>
+<ng-template #installmentConfirmModal let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title">{{'Commitment to pay fees' | translate}}</h4>
+        <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+    </div>
+    <div class="modal-body">
+        <!-- <h5>{{'Commitment to pay fees' | translate}}</h5> -->
+        <p>{{'I acknowledge that I am the parent of the student, ' | translate}} <b>{{ selectedLanguage == "en" ? selectedStudentForInstallment?.FullNameInEnglish : selectedStudentForInstallment?.FullNameInArabic }}</b> {{ ' that I have applied to benefit from the fee installment service.' | translate }} </p>
+        <p>{{'I pledge to pay all due fees according to the approved payment schedule and dates recorded in the system, and I take full responsibility for adhering to ' | translate}} <b>{{'the payment dates.' | translate}}</b> </p>
+        <div class="table-responsive my-3">
+            <table class="table table-bordered table-sm align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th class="text-center">
+                            {{ 'Installment' | translate }}
+                        </th>
+                        <th class="text-center">
+                            {{ 'Amount' | translate }}
+                        </th>
+                        <th class="text-center">
+                            {{ 'Due Date' | translate }}
+                        </th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <tr *ngFor="let installment of feeSettingInstallmentDetails">
+                        <td class="text-center">
+                            {{ installment?.InstallmentNo }}
+                        </td>
+                        <td class="text-center">
+                            {{ installment?.Amount | number: '1.2-2' }}
+                            {{ 'AED' | translate }}
+                        </td>
+                        <td class="text-center">
+                            {{ installment?.DueDate | date: 'dd/MM/yyyy' }}
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <p>{{'It also acknowledged that failure to adhere to payment on the specified dates entails taking the measures approved by the competent authority.' | translate}}</p>
+        <p>{{'I acknowledge and agree with the above.' | translate}}</p>
+        <label style="cursor: pointer;">
+            <p-checkbox [(ngModel)]="isAcknowledged" [binary]="true" inputId="binary"></p-checkbox>
+            <span class="px-2">{{'I agree to undertake and commit to pay the fees according to the specified dates.' | translate}}</span>
+        </label>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-outline-primary btn-sm" (click)="modal.dismiss('cancel click')">{{'Cancel' | translate}}</button>
+        <button type="button" class="btn btn-primary btn-sm" [disabled]="!isAcknowledged || isInstallmentBtnDisabled" (click)="confirmConvertToEMI()">{{'Confirm' | translate}}</button>
+    </div>
+</ng-template>

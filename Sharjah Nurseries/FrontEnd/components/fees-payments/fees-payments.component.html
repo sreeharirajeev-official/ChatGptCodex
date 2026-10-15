@@ -1,0 +1,762 @@
+<div [ngClass]="{'preventScrollOnLoading': !showLoader}">
+<loading *ngIf="!showLoader"></loading>
+
+<div class="col-xl-12"  [@loadingAnimation]>
+<div class="container-fluid">
+    <!-- <div ngbNav #nav="ngbNav" class="nav-tabs" [(activeId)]="activeTab">
+        <ng-container [ngbNavItem]="1">
+          <button ngbNavLink><div class="title mb-2"><span class="fs-18 text-black font-w600"><i class="fas fa-clock title-icon"></i>{{ 'PENDING PAYMENTS' | translate }}</span></div></button>
+          <ng-template ngbNavContent>
+            <app-fp-pending
+                [pendingPayments]="paymentHistory"
+                [selectedLanguage]="selectedLanguage"
+                [selectedStudents]="selectedStudents"
+                (onSelectDeselectPaymentEvent)="onSelectDeselectPendingPayment($event.event, $event.payment)"
+                (openPaymentModalEvent)="openPaymentModal($event, $event.confirmed)"
+            >
+            </app-fp-pending>
+        </ng-template>
+        </ng-container>
+        <ng-container [ngbNavItem]="2" *ngIf="false">
+          <button ngbNavLink><div class="title mb-2"><span class="fs-18 text-black font-w600"><i class="fas fa-receipt title-icon"></i> {{ 'UPCOMING PAYMENTS' | translate }} </span></div></button>
+          <ng-template ngbNavContent>
+            <div class="col-xl-12">
+                <div class="table-responsive">
+                    <table class="table display mb-4 dataTablesCard  admin-applications-table card-table table-bordered fee-payment-table" id="example5">
+                        <thead *ngIf="!showPaymentHistory">
+                            <tr>
+                                <div class="p-4 text-center" >
+                                    <div class="text-center">
+                                        <span class="d-block"><b>{{"No UPCOMING PAYMENTS" | translate}}</b></span>
+                                      </div>
+                                      <div class="my-4">
+                                        <i class="fas fa-receipt fa-6x application-icon-color"></i>
+                                      </div>
+                                </div>
+                            </tr>
+                        </thead>
+                        <thead class="payment-header">
+                            <tr *ngIf="showPaymentHistory">
+                                <th> {{ 'Date' | translate }} </th>
+                                <th> {{ 'Description' | translate }} </th>
+                                <th> {{ 'Amount' | translate }} </th>
+                                <th> {{ 'Pay' | translate }} </th>
+                            </tr>
+                        </thead>
+                        <tbody *ngIf="showPaymentHistory" class="payment-body">
+                            <ng-container *ngFor="let payment of upcomingPayments">
+                                <tr>
+                                    <td> {{ payment?.DueDate | date: 'dd/MM/yyyy' }} </td>
+                                    <td style="text-align: left;"> {{ payment?.Description }} </td>
+                                    <td> {{ payment?.Amount }}</td>
+                                    <td><a class="btn btn-rounded btn-outline-primary btn-xs"> {{ 'Pay now' | translate }} </a></td>
+                                </tr>
+                            </ng-container>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+          </ng-template>
+        </ng-container>
+        <ng-container [ngbNavItem]="3">
+          <button ngbNavLink><div class="title mb-2 payment-h-t"><span class="fs-18 text-black font-w600"><i class="fas fa-history title-icon"></i> {{ 'PAYMENT HISTORY' | translate }} </span></div></button>
+          <ng-template ngbNavContent>
+            <app-fp-history
+                [paymentHistory]="paymentHistory"
+                [selectedLanguage]="selectedLanguage"
+                [selectedStudents]="selectedStudents"
+                (printTableToPDFEvent)="printTableToPDF($event)"
+            >
+            </app-fp-history>
+        </ng-template>
+        </ng-container>
+    </div> -->
+    <div class="row">
+        <div class="col-xl-12 d-flex justify-content-between">
+            <div class="custom-tab-1 student-details-tab mb-3 mt-2 w-100">
+                <ul class="nav nav-tabs payment-tabs" role="tablist">
+                    <li (click)="selectedTab = 1" class="nav-item text-center">
+                        <a data-bs-toggle="tab" class="nav-link" [ngClass]="{'show active': selectedTab == 1}">
+                            <!-- <span class="fs-18 text-black pe-1"><i style="font-size: 0.8rem;" class="fas fa-clock" [ngClass]="{'payment-tabs-icon': selectedTab != 1}"></i></span> -->
+                            {{ 'Payments Due' | translate }}
+                        </a>
+                    </li>
+                    <li (click)="selectedTab = 2" class="nav-item text-center">
+                        <a data-bs-toggle="tab" class="nav-link" [ngClass]="{'show active': selectedTab == 2}">
+                            <!-- <span class="fs-18 text-black pe-1"><i style="font-size: 0.8rem;" class="fas fa-history" [ngClass]="{'payment-tabs-icon': selectedTab != 2}"></i></span> -->
+                            {{ 'PAYMENT HISTORY' | translate }}
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <div *ngIf="screenW > 531" class="mb-3 mt-2 d-flex align-items-center " style="border-bottom: 1px solid #dee2e6; width: 13rem;">
+                <div class="form-group mb-0 export-to-excel-icon" (click)="openDownloadModal()">
+                    <i class="fas fa-receipt"></i>
+                    {{ 'Wallet Statement' | translate }}
+                </div>
+            </div>
+        </div>
+        <div *ngIf="screenW <= 531" class="col-12 text-end-rtl text-end-ltr mb-3">
+            <div class="form-group mb-0 export-to-excel-icon" (click)="openDownloadModal()">
+                <i class="fas fa-receipt"></i>
+                {{ 'Wallet Statement' | translate }}
+            </div>
+        </div>
+        <div class="col-xl-4 custom-col-40">
+            <app-fp-student-list
+                [studentList]="StudentList"
+                [selectedLanguage]="selectedLanguage"
+                [selectedTab]="selectedTab"
+                (studentSelectEvent)="handleSelectedStudentChange($event)"
+            ></app-fp-student-list>
+        </div>
+        <div class="col-xl-8 custom-col-60">
+            <div *ngIf="selectedTab == 1">
+                <app-fp-pending
+                [feeDueStudents]="feeDueStudents"
+                [pendingPayments]="paymentHistory"
+                [selectedLanguage]="selectedLanguage"
+                [selectedStudents]="selectedStudents"
+                (onSelectDeselectPaymentEvent)="onSelectDeselectPendingPayment($event.event, $event.payment)"
+                (openPaymentModalEvent)="openPaymentModal($event, $event.confirmed)"
+                (onConvertingToInstallment)="onConvertingToInstallment($event)"
+            >
+            </app-fp-pending>
+            </div>
+            <div *ngIf="selectedTab == 2">
+                <app-fp-history
+                [paymentHistory]="paymentHistory"
+                [selectedLanguage]="selectedLanguage"
+                [selectedStudents]="selectedStudents"
+                [showSpinner]="showSpinner"
+                (printTableToPDFEvent)="printTableToPDF($event)"
+            >
+            </app-fp-history>
+            </div>
+        </div>
+
+    </div>
+
+
+
+</div>
+
+
+<div id="printPreviewHiddenContainer">
+
+</div>
+
+
+<ng-template #paymentModal let-modal>
+    <div class="modal-wrapper">
+        <div class="modal-contents">
+            <div class="modal-header">
+                <h4 class="modal-title">{{ 'Confirm' | translate }}</h4>
+                <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+            </div>
+            <div class="modal-body">
+                {{ 'Are you sure you want to make the following payments?' | translate }}
+                <br><br>
+                <table class="table-bordered">
+                    <tr *ngFor="let payment of selectedPayments">
+                        <td [style]="{'width':'50% !important', 'font-size':'14px'}">{{ payment.KidNameEnglish }}</td>
+                        <td [style]="{'width':'25% !important', 'font-size':'14px'}">{{ payment.FeeSetting?.FeeType?.Type }}</td>
+                        <td [style]="{'width':'25% !important', 'font-size':'14px'}">{{ payment.FormattedAmount }}</td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td>Total</td>
+                        <td>{{getSelectedPaymentSum() | number: '1.2-2'}}</td>
+                    </tr>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <div class="d-block w-100 text-end">
+                    <a
+                        class="btn btn-xs btn-dark light btn-rounded me-3 mb-2 rtl-ms-3"
+                        (click)="modal.close('Close click')"
+                        > {{'Cancel' | translate}} </a>
+                    <a
+                    class="btn btn-xs btn-primary btn-rounded mb-2"
+                    (click)="makeBulkPayment()">
+                        {{'Confirm' | translate}}
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</ng-template>
+
+<ng-template #paymentSuccessModal let-modal>
+    <div class="modal-wrapper">
+        <div class="modal-contents">
+            <div class="modal-header">
+                <h4 class="modal-title">{{ 'Success' | translate }}</h4>
+                <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click'); clearActionRequiredModalRef()"></button>
+            </div>
+            <div class="modal-body">
+                <form class="text-center">
+                    <i class="fas fa-check-circle success-icon"></i>
+                    <p class="body">{{ "Payment processed successfully." | translate}}</p>
+                    <span *ngIf="paymentOrderRef" style="line-break: anywhere; font-size: .98rem;" class="d-block mb-1 mt-1">
+                        {{ "Order Reference :" | translate}}
+                        {{paymentOrderRef}}
+                    </span>
+                </form>
+            </div>
+        </div>
+    </div>
+</ng-template>
+
+<ng-template #paymentDeclinedModal let-modal>
+    <div class="modal-wrapper">
+        <div class="modal-contents">
+            <div class="modal-header">
+                <h4 class="modal-title">{{ 'Declined' | translate }}</h4>
+                <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click'); clearActionRequiredModalRef()"></button>
+            </div>
+            <div class="modal-body">
+                <form class="text-center">
+                    <i class="fa-solid fa-ban failure-icon"></i>
+                    <!-- <p class="body mb-0">{{"Your payment has been" | translate}} <br> {{ "declined." | translate}}</p> -->
+                    <p class="body mb-0">{{"Your payment has been declined." | translate}}</p>
+                    <span *ngIf="paymentOrderRef" style="line-break: anywhere; font-size: .98rem;" class="d-block mb-1 mt-1">
+                        {{ "Order Reference :" | translate}}
+                        {{paymentOrderRef}}
+                    </span>
+                </form>
+            </div>
+        </div>
+    </div>
+</ng-template>
+
+<ng-template #paymentAlreadyPaidModal let-modal>
+    <div class="modal-header confirmation-header-modall">
+    </div>
+    <div class="modal-body d-flex align-content-center justify-content-center pb-0">
+        <form class="text-center">
+            <img src="/assets/images/warning 1.png" height="50" width="50"  alt="">
+            <h4 class="modal-title pb-3" id="modal-basic-title">{{"Warning"| translate}}</h4>
+             <p>{{"Selected payments were already completed."| translate}}</p>
+        </form>
+    </div>
+    <div class="modal-footer cancel-application-action justify-content-center confirmation-footer-modall">
+        <button
+            type="button"
+            class="btn  btn-primary btn-sm" style="border-radius: 4px;"
+            (click)="modal.dismiss('Cross click')"
+        >{{"Ok"| translate}}
+        </button>
+    </div>
+</ng-template>
+<ng-template #paymentPaidDetailsModal let-modal>
+    <div class="modal-wrapper">
+        <div class="modal-contents">
+            <div class="modal-header">
+                <h4 class="modal-title">{{ 'Already Paid' | translate }}</h4>
+                <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click'); clearActionRequiredModalRef()"></button>
+            </div>
+            <div class="modal-body">
+                <div class="pb-3">
+                    <span class="fs-14">{{'The following payments that you have selected is already paid' | translate}}</span>
+                </div>
+                <div class="pb-3" *ngIf="screenW > 600">
+                    <p-table [value]="alreadyPaidPayments" [scrollable]="true" [scrollHeight]="'30vh'"
+                        class="table display late-fee-table admin-applications-table fee-payment-table fee-payment-table-n parent-consent-reviewer-edit-table">
+                        <ng-template pTemplate="header">
+                            <tr>
+                                <th style="background: #EAF4FE !important;"> {{ 'Name' | translate }} </th>
+                                <th style="background: #EAF4FE !important;"> {{ 'Invoice No' | translate }} </th>
+                                <th style="background: #EAF4FE !important;"> {{ 'Description' | translate }} </th>
+                                <th style="background: #EAF4FE !important;"> {{ 'Amount' | translate }} </th>
+                                <!-- <th style="background: #EAF4FE !important;"></th> -->
+                            </tr>
+                        </ng-template>
+                        <ng-template pTemplate="body" let-payment>
+                            <tr>
+                                <td> {{ selectedLanguage == 'en' ? payment?.FullNameInEnglish : payment?.FullNameInArabic }} </td>
+                                <td> {{ payment?.InvoiceNo }} </td>
+                                <td> {{ selectedLanguage == 'en' ? payment?.DescriptionEnglish : payment?.DescriptionArabic }} </td>
+                                <td> {{ payment?.Amount | number: '1.2-2' }} </td>
+                            </tr>
+                        </ng-template>
+                    </p-table>
+                </div>
+                <div class="pb-3 pay-mobile-view" *ngIf="screenW <= 600">
+                    <div class="row" *ngIf="alreadyPaidPayments && alreadyPaidPayments.length > 0">
+                        <div class="col-12" *ngFor="let payment of alreadyPaidPayments">
+                            <div class="card mobile-view-card select-m-card" style="border: 1px solid #ccc;">
+                                <div class="card-header" style="border-bottom: 1px solid #ccc;">
+                                    <span class="fs-13 fw-bold"> {{ selectedLanguage == 'en' ? payment?.FullNameInEnglish : payment?.FullNameInArabic }} </span>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row mb-3">
+                                        <div class="col-6">
+                                            <div class="form-group form-view mb-0">
+                                                <label>{{'Invoice No' | translate}}</label>
+                                                <span> {{ payment?.InvoiceNo }} </span>
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="form-group form-view mb-0">
+                                                <label>{{'Amount' | translate}}</label>
+                                                <span> {{ payment?.Amount | number: '1.2-2' }} </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <div class="form-group form-view mb-0">
+                                                <label>{{'Description' | translate}}</label>
+                                                <span>{{ selectedLanguage == 'ar' ? payment?.DescriptionArabic : payment?.DescriptionEnglish }}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div class="d-flex w-100 justify-content-end">
+                    <a
+                        class="btn btn-xs btn-outline-primary mx-2"
+                        (click)="modal.dismiss('Cross click');"
+                        > {{'Cancel' | translate}} </a>
+                    <a
+                        [class.disabled]="!pendingAmount || pendingAmount <= 0"
+                        class="btn btn-xs btn-primary"
+                        (click)="modal.dismiss('Cross click'); payPendingPayments()"
+                        > {{'Pay' | translate}} {{ pendingAmount }} </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</ng-template>
+
+<ng-template #paymentFailureModal let-modal>
+    <div class="modal-wrapper">
+        <div class="modal-contents">
+            <div class="modal-header">
+                <h4 class="modal-title">{{ 'Canceled' | translate }}</h4>
+                <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click'); clearActionRequiredModalRef()"></button>
+            </div>
+            <div class="modal-body">
+                <form class="text-center">
+                    <i class="fas fa-times-circle failure-icon"></i>
+                    <p class="body"> {{"Your payment has been canceled." | translate }}.</p>
+                    <span *ngIf="paymentOrderRef" style="line-break: anywhere; font-size: .98rem;" class="d-block mb-1 mt-1">
+                        {{ "Order Reference :" | translate}}
+                        {{paymentOrderRef}}
+                    </span>
+                </form>
+            </div>
+        </div>
+    </div>
+</ng-template>
+</div>
+<!-- <app-payment-gateway *ngIf="this.isShowing" [paymentgateway]="paymentData"> </app-payment-gateway> -->
+<div #pdfContainer style="display: none;">
+
+    <div id="content" style="font-family: Amiri; color: #000; font-size: 15px; direction: ltr; text-align: left;">
+        <div class="receipt-container">
+            <img class="img-logo" src="../../../../assets/images/main-logo.png">
+            <span class="address-container" style="font-size: 20px;">
+                <!-- Tel : ************* <br> -->
+                Telephone Number: 80080005 <br>
+                Email: info@sn.ac.ae <br>
+                <!-- P.O.Box: <br> -->
+                Adress: Al Rahmaniyah - Muzairah - Emirate of Sharjah <br>
+                Website: https://sn.ac.ae <br>
+                TRN Number: 104116704800003 <br>
+            </span>
+        </div>
+        <div class="receipt-head mt-2rem mb-10px">
+            <h4 class="header-underline"> Receipt Voucher / سند القبض</h4>
+        </div>
+        <div class="custom-box">
+            <table class="custom-table">
+                <tr>
+                    <td [style]="{'width': '15% !important'}"> Receipt No : </td>
+                    <td [style]="{'width': '20% !important'}" class="text-center"> <span class="basic-details"> {{ currentObj?.payemt?.PaymentReceiptLog?.ReceiptNo }} </span> </td>
+                    <td [style]="{'width': '15% !important'}" class="receipt-border-right text-end pe-3"> : رقم الإيصال </td>
+                    <td [style]="{'width': '15% !important'}" class="ps-3"> Date : </td>
+                    <td [style]="{'width': '20% !important'}" class="text-center"> <span class="basic-details"> {{ currentObj?.payemt?.PaymentReceiptLog?.PaymentDate | date: 'dd - MMM - yyyy' }} </span> </td>
+                    <td [style]="{'width': '15% !important'}" class="text-end pe-2"> : تاريخ  </td>
+                </tr>
+                <tr class="custom-empty-row">
+                    <td [style]="{'width': '15% !important'}"></td>
+                    <td [style]="{'width': '20% !important'}"></td>
+                    <td [style]="{'width': '15% !important'}" class="receipt-border-right"></td>
+                    <td [style]="{'width': '15% !important'}" class="ps-3"></td>
+                    <td [style]="{'width': '20% !important'}"></td>
+                    <td [style]="{'width': '15% !important'}"></td>
+                </tr>
+                <tr>
+                    <td [style]="{'width': '15% !important'}"> Invoice No : </td>
+                    <td [style]="{'width': '20% !important'}" class="text-center"> <span class="basic-details"> {{ currentObj?.payemt?.PaymentReceiptLog?.InvoiceNo }} </span> </td>
+                    <td [style]="{'width': '15% !important'}" class="receipt-border-right text-end pe-3"> : رقم الفاتورة </td>
+                    <td [style]="{'width': '30% !important'}" class="ps-3"> Invoice Date : </td>
+                    <td [style]="{'width': '50% !important'}" class="text-center"> <span class="basic-details"> {{ currentObj?.payemt?.PaymentReceiptLog?.InvoicedDate | date: 'dd - MMM - yyyy' }}</span> </td>
+                    <td [style]="{'width': '10% !important'}" class="text-end pe-2"> : تاريخالفاتورة </td>
+                </tr>
+                <tr class="custom-empty-row">
+                    <td [style]="{'width': '15% !important'}"></td>
+                    <td [style]="{'width': '20% !important'}"></td>
+                    <td [style]="{'width': '15% !important'}" class="receipt-border-right"></td>
+                    <td [style]="{'width': '15% !important'}" class="ps-3"></td>
+                    <td [style]="{'width': '20% !important'}"></td>
+                    <td [style]="{'width': '15% !important'}"></td>
+                </tr>
+                <tr>
+                    <td [style]="{'width': '15% !important'}"> Student ID : </td>
+                    <td [style]="{'width': '20% !important'}" class="text-center"> <span class="basic-details"> {{ currentObj?.payemt?.PaymentReceiptLog?.StudentCode }} </span> </td>
+                    <td [style]="{'width': '15% !important'}" class="receipt-border-right text-end pe-3"> : هوية الطالب </td>
+                    <td [style]="{'width': '15% !important'}" class="ps-3"> Grade : </td>
+                    <td [style]="{'width': '20% !important'}" class="text-center"> <span class="basic-details"> {{ currentObj?.payemt?.PaymentReceiptLog?.GradeDisplayName }} </span> </td>
+                    <td [style]="{'width': '15% !important'}" class="text-end pe-2"> : درجة </td>
+                </tr>
+                <tr class="custom-empty-row receipt-border-bottom"></tr>
+                <tr class="custom-empty-row"></tr>
+                <tr>
+                    <td [style]="{'width': '15% !important'}"> Child Name : </td>
+                    <td [style]="{'width': '35% !important'}" colspan="2" class="pe-3"> <span class="basic-details"> {{ currentObj?.payemt?.PaymentReceiptLog?.ChildFullNameInEnglish }} </span> </td>
+                    <!-- <td [style]="{'width': '0% !important'}"></td>
+                    <td [style]="{'width': '0% !important'}"></td> -->
+                    <td [style]="{'width': '35% !important'}" colspan="2" class="text-end ps-3"> <span class="basic-details"> {{ currentObj?.payemt?.PaymentReceiptLog?.ChildFullNameInArabic }} </span> </td>
+                    <td [style]="{'width': '15% !important'}" class="text-end pe-2"> : اسم الطفل </td>
+                </tr>
+            </table>
+        </div>
+        <div class="receipt-head mt-2rem mb-10px">
+            <h4 class="header-underline"> Fee Details / تفاصيل الرسوم </h4>
+        </div>
+        <div>
+            <table class="custom-table-fee">
+                <tr>
+                    <th> Description </th>
+                    <th class="text-center amount-column"> Amount / كمية ( AED ) </th>
+                    <th class="text-center amount-column"> VAT Amount / مبلغ الضريبة المضافة درهم (AED) </th>
+                    <th class="text-end"> وصف </th>
+                </tr>
+                <tr>
+                    <td> {{ currentObj?.payemt?.PaymentReceiptLog?.PaymentDescription }} </td>
+                    <td class="text-center"> {{ currentObj?.payemt?.PaymentReceiptLog?.Amount }} </td>
+                    <td class="text-center"> {{ (currentObj?.payemt?.PaymentReceiptLog?.VATAmount ?? 0) | number:'1.2-2'}} </td>
+                    <td class="text-end" style="text-align:right;;direction:rtl"> {{ currentObj?.payemt?.PaymentReceiptLog?.PaymentDescriptionInArabic }} </td>
+                </tr>
+                <tr>
+                    <td> Total Paid </td>
+                    <td class="text-center" [colSpan]="2"> {{ (currentObj?.payemt?.PaymentReceiptLog?.TotalFee ?? 0) | number:'1.2-2' }} </td>
+                    <td class="text-end"> مجموع المبالغ المدفوعة </td>
+                </tr>
+            </table>
+            <!-- <div class="w-100 text-center basic-details mt-10px"> Advance : AED 0.00 </div> -->
+        </div>
+        <div class="mt-2rem">
+            <table class="custom-table-fee" style="width: 70%;">
+                <tr>
+                    <td style="width: 60%;">Total amount in words AED / المبلغ الإجمالي في الكلمات درهم:</td>
+                    <td class="text-center"> {{ currentObj?.payemt?.PaymentReceiptLog?.TotalFeeInWords }} / {{ currentObj?.payemt?.PaymentReceiptLog?.TotalFeeInWordsAr }} </td>
+                </tr>
+                <tr>
+                    <td style="width: 60%;">VAT amount in words AED / مبلغ الضريبة المضافة في الكلمات درهم:</td>
+                    <td class="text-center"> {{ currentObj?.payemt?.PaymentReceiptLog?.VATAmountInWords }} / {{ currentObj?.payemt?.PaymentReceiptLog?.VATAmountInWordsAr }} </td>
+                </tr>
+            </table>
+        </div>
+        <div class="mt-2rem">
+            <table class="custom-table-fee" style="width: 70%;">
+                <tr>
+                    <td style="width: 60%;">Taxable Amount AED / المبلغ الخاضع للضريبة درهم:</td>
+                    <td class="text-center"> {{ currentObj?.payemt?.PaymentReceiptLog?.Amount }} </td>
+                </tr>
+                <tr>
+                    <td style="width: 60%;">Discount AED / الخصم درهم:</td>
+                    <td class="text-center"> 0.00 </td>
+                </tr>
+                <tr>
+                    <td style="width: 60%;">VAT 5% / الضريبة المضافة 5%:</td>
+                    <td class="text-center"> {{ (currentObj?.payemt?.PaymentReceiptLog?.VATAmount ?? 0) | number: '1.2-2' }} </td>
+                </tr>
+                <tr>
+                    <td style="width: 60%;">VAT 0% / الضريبة المضافة 0%:</td>
+                    <td class="text-center"> 0.00 </td>
+                </tr>
+                <tr>
+                    <td style="width: 60%;">Round off AED / تعديل درهم:</td>
+                    <td class="text-center"> {{ (currentObj?.payemt?.PaymentReceiptLog?.TotalFee ?? 0) | number:'1.2-2' }} </td>
+                </tr>
+                <tr>
+                    <td style="width: 60%;"><b>Total with VAT AED / الإجمالي مع الضريبة المضافة درهم:</b></td>
+                    <td class="text-center"> {{ (currentObj?.payemt?.PaymentReceiptLog?.TotalFee ?? 0) | number:'1.2-2' }} </td>
+                </tr>
+            </table>
+        </div>
+        <div class="mtb-2rem">
+            <!-- <p>
+                Narration : {{ currentObj?.payemt?.Description }}
+            </p> -->
+            <p dir="rtl">
+                شكرا جزيلاً تم استلام مبلغ وقدرة  {{ (currentObj?.payemt?.PaymentReceiptLog?.TotalFee ?? 0) | number:'1.2-2' }}  درهم من خلال بوابة الدفع ببطاقات الائتمان / الخصم
+            </p>
+            <p>
+                Thank you very much. An amount of {{ (currentObj?.payemt?.PaymentReceiptLog?.TotalFee ?? 0) | number:'1.2-2' }} dirhams has been received through the credit / debit card payment gateway. <br>
+            </p>
+        </div>
+        <div class="receipt-logo mtb-2rem">
+            <img src="../../../../../assets/images/receipt-logo.png">
+        </div>
+        <div class="receipt-logo">
+            <p>
+                تم إنشاء هذا الإيصال إلكترونيًا ولا يتطلب أي توقيع
+            </p>
+        </div>
+        <div class="receipt-logo">
+            <p>
+                This receipt was generated electronically and does not require any signature. <br>
+            </p>
+        </div>
+        <!-- <div class="receipt-logo">
+            <p>
+                This receipt is subject to NBAD crediting the amount to our account.
+            </p>
+        </div> -->
+    </div>
+</div>
+</div>
+<ng-template #downloadStatments let-modal>
+    <div class="modal-wrapper">
+        <div class="modal-contents">
+            <div class="modal-header">
+                <h4 class="modal-title">{{ 'Statement' | translate }}</h4>
+                <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click'); clearStatment()"></button>
+            </div>
+            <div class="modal-body">
+                <form #statmentDuration = "ngForm">
+                    <div class="row student-filter">
+                        <div class="col-xl-3 col-lg-3 col-md-6 col-sm-12 col-12">
+                            <div class="form-group statement">
+                                <label>{{'Student' | translate}}</label>
+                                <p-dropdown
+                                    class="filter-dropdown"
+                                    [options]="StudentList"
+                                    [(ngModel)]="selectedStudent"
+                                    appendTo="body"
+                                    [required]="true"
+                                    name="Student"
+                                    placeholder="{{'Select student' | translate}}">
+                                    <ng-template pTemplate="selectedItem" let-selectedItem>
+                                        {{ selectedLanguage == 'ar' ? selectedItem?.FullNameInArabic : selectedItem?.FullNameInEnglish }}
+                                    </ng-template>
+                                    <ng-template let-option pTemplate="item">
+                                        {{ selectedLanguage == 'ar' ? option?.FullNameInArabic : option?.FullNameInEnglish }}
+                                    </ng-template>
+                                </p-dropdown>
+                                <div *ngIf="formSubmitted && statmentDuration.controls['Student']?.invalid">
+                                    <div class="text-danger">{{'Student is required' | translate}}</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xl-3 col-lg-3 col-md-6 col-sm-12 col-12">
+                            <div class="form-group date-pick-ch">
+                                <label>{{'Start Date' | translate}}</label>
+                                <p-calendar name="StatmentStartDate" #StatmentStartDate="ngModel" [showIcon]="true"
+                                    [(ngModel)]="statmentStartDate" [required]="true"
+                                    class="custom-check-in-calendar" placeholder="dd-mm-yyyy" dateFormat="dd-mm-yy"
+                                    appendTo="body" (onSelect)="statmentEndDate = null">
+                                </p-calendar>
+                                <div *ngIf="formSubmitted && statmentDuration.controls['StatmentStartDate']?.invalid">
+                                    <div class="text-danger">{{'Start date is required' | translate}}</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xl-3 col-lg-3 col-md-6 col-sm-12 col-12">
+                            <div class="form-group date-pick-ch">
+                                <label>{{'End Date' | translate}}</label>
+                                <p-calendar name="StatmentEndDate" #StatmentEndDate="ngModel" [showIcon]="true"
+                                    [(ngModel)]="statmentEndDate" [required]="true"
+                                    class="custom-check-in-calendar" placeholder="dd-mm-yyyy" dateFormat="dd-mm-yy"
+                                    appendTo="body" [minDate]="statmentStartDate">
+                                </p-calendar>
+                                <div *ngIf="formSubmitted && statmentDuration.controls['StatmentEndDate']?.invalid">
+                                    <div class="text-danger">{{'End date is required' | translate}}</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xl-3 col-lg-3 col-md-6 col-sm-12 col-12 align-items-center d-flex">
+                            <div class="form-group mb-0 mt-3">
+                            <button (click)="getWalletStatement(statmentDuration)" class="btn btn-outline-primary btn-xs filter-btn px-2 py-1">
+                                {{'Get Statement' | translate}}
+                                <i class="fa fa-search"></i>
+                            </button>
+                            </div>
+                        </div>
+                        <div class="col-12 align-items-center justify-content-end d-flex mt-2 mb-2">
+                            <div class="form-group mb-0 export-to-excel-icon" (click)="printStatments()">
+                                <i class="fa fa-print" *ngIf="!printLoader"></i>
+                                <i class="fa fa-spinner fa-spin-pulse" *ngIf="printLoader"></i>
+                                {{ 'Print Statement' | translate }}
+                            </div>
+                        </div>
+                    </div>
+                </form>
+                <div class="table-responsive" style="height: 34vh; overflow-y: auto;">
+                    <div *ngIf="!showTableLoader" [@loadingAnimation]>
+                        <p-table
+                        [value]="walletStatement?.WalletTransaction"
+                        class="call-center-table custom-admin-primeng-table custom-admin-student-table"
+                        [styleClass]="'p-datatable-striped'"
+                        [tableStyle]="{'table-layout':'fixed','min-height': walletStatement?.WalletTransaction.length == 0 ? '33vh' : 'unset'}">
+                            <ng-template pTemplate="header">
+                                <tr [style]="{'height': '10px !important'}">
+                                    <th> {{'Receipt No' | translate}} </th>
+                                    <th> {{'Date' | translate}} </th>
+                                    <th> {{'Description' | translate}} </th>
+                                    <th class="text-end-ltr"> {{'Debit' | translate}} (<i class="fa-solid fa-minus px-1"></i>) </th>
+                                    <th class="text-end-ltr"> {{'Credit' | translate}} (<i class="fa-solid fa-plus px-1"></i>) </th>
+                                    <th class="text-end-ltr"> {{'Balance' | translate}} </th>
+                                </tr>
+                            </ng-template>
+                            <ng-template pTemplate="body" let-item let-rowIndex="rowIndex">
+                                <tr [pSelectableRow]="item" [pSelectableRowIndex]="rowIndex">
+                                    <td> {{ item?.ReceiptNo}} </td>
+                                    <td> {{ item?.TransactionDate | date: 'dd/MM/yyy'}} </td>
+                                    <td> {{ item?.Remark }} </td>
+                                    <td class="text-end-ltr"> {{ item?.IsOutTransaction == true ? (item?.Amount | number: '1.2-2') : '' }} </td>
+                                    <td class="text-end-ltr"> {{ item?.IsOutTransaction == false ? (item?.Amount | number: '1.2-2') : '' }} </td>
+                                    <td class="text-end-ltr"> {{ item?.RunningBalance | number: '1.2-2'}} </td>
+                                </tr>
+                            </ng-template>
+                            <ng-template pTemplate="emptymessage">
+                                <tr class="h-20vh">
+                                    <td colspan="5" class="text-center fw-bold">{{'No Data' | translate}}</td>
+                                </tr>
+                              </ng-template>
+                        </p-table>
+                    </div>
+                    <loading *ngIf="showTableLoader" class="custom-modal-loader"></loading>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div class="d-block w-100 text-end">
+                    <a
+                        class="btn btn-xs btn-dark light btn-rounded me-3 mb-2 rtl-ms-3"
+                        (click)="modal.close('Close click'); clearStatment()"
+                        > {{'Cancel' | translate}} </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</ng-template>
+
+<div #statmentsRef style="display: none;">
+    <div style="font-family: Amiri; color: #000; font-size: 23px; direction: ltr; text-align: left;">
+        <div class="receipt-container">
+            <img class="img-logo" src="../../../../assets/images/main-logo.png">
+            <span class="address-container" style="font-size: 20px;">
+                Telephone Number: 80080005 <br>
+                Email: info@sn.ac.ae <br>
+                Adress: Al Rahmaniyah - Muzairah - Emirate of Sharjah <br>
+                Website: https://sn.ac.ae <br>
+            </span>
+        </div>
+        <div class="receipt-head mb-10px">
+            <h4 class="header-underline"> </h4>
+        </div>
+        <div class="receipt-head mt-2rem">
+            <h4 class="header-underline"> {{ walletStatement?.Student?.NurseryNameInEnglish }} / {{ walletStatement?.Student?.NurseryNameArabic }}</h4>
+        </div>
+        <div class="d-flex justify-content-between py-3">
+            <span style="font-weight: bold;">Finance Department / قسم المالية</span>
+            <span>{{currentDate | date: 'dd/MM/yyy'}}</span>
+        </div>
+        <div class="custom-box">
+            <table class="custom-table">
+                <tr>
+                    <!-- <td [style]="{'width': '15% !important'}"> Child Name : </td> -->
+                    <td [style]="{'width': '35% !important'}" colspan="3" class="pe-3"> <span class="basic-details"> {{ selectedStudent?.FullNameInEnglish }} </span> </td>
+                    <td [style]="{'width': '35% !important'}" colspan="3" class="text-end ps-3"> <span class="basic-details"> {{ selectedStudent?.FullNameInArabic }} </span> </td>
+                    <!-- <td [style]="{'width': '15% !important'}" class="text-end pe-2"> : اسم الطفل </td> -->
+                </tr>
+                <tr>
+                    <td [style]="{'width': '20% !important'}" > Student Code </td>
+
+                    <td [style]="{'width': '30% !important'}" colspan="2" rowspan="2" class="pe-3"> <span class="basic-details"> : {{ walletStatement?.Application?.ApplicationCode }} </span> </td>
+                    <td [style]="{'width': '20% !important'}" class="text-end pe-2"> Application No </td>
+
+                    <td [style]="{'width': '30% !important', 'text-align':'right'}" colspan="2" rowspan="2" class="ps-3"> <span class="basic-details"> : {{ walletStatement?.Student?.StudentCode }} </span> </td>
+                </tr>
+                <tr>
+                    <td [style]="{'width': '15% !important'}"> كود طالب </td>
+                    <td [style]="{'width': '15% !important'}" class="text-end pe-2"> رمز التطبيق </td>
+                </tr>
+                <tr>
+                    <td [style]="{'width': '15% !important'}"> From Date </td>
+
+                    <td [style]="{'width': '35% !important'}" colspan="2" rowspan="2" class="pe-3"> <span class="basic-details"> : {{ this.statmentStartDate | date: 'dd/MM/yyy' }} </span> </td>
+                    <td [style]="{'width': '15% !important'}" class="text-end pe-2"> To Date </td>
+
+                    <td [style]="{'width': '35% !important', 'text-align':'right'}" colspan="2" rowspan="2" class="ps-3"> <span class="basic-details"> : {{ this.statmentEndDate | date: 'dd/MM/yyy' }} </span> </td>
+                </tr>
+                <tr>
+                    <td [style]="{'width': '15% !important'}"> من التاريخ </td>
+                    <td [style]="{'width': '15% !important'}" class="text-end pe-2"> حتى الميعاد </td>
+                </tr>
+
+            </table>
+        </div>
+        <div class="receipt-head mt-2rem mb-10px">
+            <h4 class="header-underline"> Statement / صياغات </h4>
+        </div>
+        <div>
+            <table class="custom-table-fee">
+                <thead>
+                    <tr>
+                        <th style="width: 20% !important"> {{'Receipt No' | translate}} </th>
+                        <th style="width: 14% !important"> {{'Date' | translate}} </th>
+                        <th style="width: 36% !important"> {{'Description' | translate}} </th>
+                        <th style="width: 10% !important; text-align:center;"> {{'Debit' | translate}} <br> (-) </th>
+                        <th style="width: 10% !important; text-align:center;"> {{'Credit' | translate}} <br> (+) </th>
+                        <th style="width: 10% !important"> {{'Balance' | translate}} </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngIf="(walletStatement?.PreviousBalance!=undefined && walletStatement?.PreviousBalance!=null)">
+                        <td></td>
+                        <td></td>
+                        <td>{{"Previous Balance" | translate}}</td>
+                        <td></td>
+                        <td>{{walletStatement?.PreviousBalance ?? 0}}</td>
+                        <td>{{walletStatement?.PreviousBalance ?? 0}}</td>
+                    </tr>
+                    <tr *ngFor="let item of walletStatement?.WalletTransaction">
+                        <td> {{ item?.ReceiptNo }} </td>
+                        <td> {{ item?.TransactionDate | date: 'dd/MM/yyy'}} </td>
+                        <td> {{ item?.Remark }} </td>
+                        <td> {{ item?.IsOutTransaction == true ? item?.Amount : '' }} </td>
+                        <td> {{ item?.IsOutTransaction == false ? item?.Amount : '' }} </td>
+                        <td> {{ item?.RunningBalance }} </td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td></td>
+                        <td>{{"Total" | translate}}</td>
+                        <td>{{walletStatement?.DebitSum}}</td>
+                        <td>{{walletStatement?.CreditSum + (walletStatement?.PreviousBalance ?? 0)}}</td>
+                        <td></td>
+                    </tr>
+                    <!-- <tr>
+                        <td></td>
+                        <td></td>
+                        <td>{{"Balance" | translate}}</td>
+                        <td></td>
+                        <td></td>
+                        <td>{{walletStatement?.CreditSum - walletStatement?.DebitSum}}</td>
+                    </tr> -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

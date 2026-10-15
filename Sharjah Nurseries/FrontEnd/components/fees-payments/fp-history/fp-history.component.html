@@ -1,0 +1,192 @@
+<div class="card">
+    <div class="card-header px-3 py-3">
+        <h5 class="card-title">{{'PAYMENT HISTORY' | translate}}
+        </h5>
+    </div>
+    <div class="pt-4 text-center" *ngIf="!SelectedStudents || SelectedStudents.length <= 0">
+        <div class="card-body">
+            <div class="text-center">
+                <span class="d-block"><b>{{"SELECT STUDENTS" | translate}}</b></span>
+              </div>
+              <div class="my-4">
+                <i class="flaticon-381-user-9 fa-6x application-icon-color"></i>
+              </div>
+        </div>
+    </div>
+    <ng-container *ngIf="SelectedStudents && SelectedStudents.length > 0">
+        <ng-container *ngFor="let student of SelectedStudents">
+            <div class="mb-3" [ngClass]="this.screenW > 999 ?'card':''">
+                <div class="card-header px-3 py-1" *ngIf="SelectedStudents.length!=1">
+                    <span><b> {{ selectedLanguage == 'en' ? student?.FullNameInEnglish : student?.FullNameInArabic }} </b></span>
+                </div>
+                <div class="card-body p-0">
+                    <div class="row m-0" *ngIf="this.screenW > 999">
+                        <div class="col-12 p-0">
+                            <div class="table-responsive">
+                                <p-table
+                                [value]="student?.PaymentHistory"
+                                class="table display mb-4 admin-applications-table fee-payment-table fee-payment-table-n"
+                                >
+                                <ng-template pTemplate="header">
+                                    <tr>
+                                        <th style="cursor: default; width: 20%;"> {{ 'Fee Type' | translate }} </th>
+                                        <th style="cursor: default; width: 30%;"> {{ 'Payment description' | translate }} </th>
+                                        <th style="cursor: default; width: 15%;"> {{ 'Receipt Number' | translate }} </th>
+                                        <th style="cursor: default; width: 15%;"> {{ 'Receipt date' | translate }} </th>
+                                        <th style="cursor: default; width: 10%;"> {{ 'Paid (AED)' | translate }} </th>
+                                        <th style="cursor: default; width: 10%;"> {{'View'|translate}} </th>
+                                    </tr>
+                                </ng-template>
+                                <ng-template pTemplate="body" let-payment>
+                                    <tr [pSelectableRow]="payment">
+                                        <td style="width: 20%;"> {{ selectedLanguage == 'ar' ? payment?.FeeSetting?.FeeType?.TypeInArabic : payment?.FeeSetting?.FeeType?.Type }}</td>
+                                        <td style="width: 30%; text-align: right;" *ngIf="selectedLanguage == 'ar'"> {{ payment?.DescriptionInArabic }} </td>
+                                        <td style="width: 30%; text-align: left;" *ngIf="selectedLanguage == 'en'"> {{ payment?.Description }} </td>
+                                        <td style="width: 15%;"> {{ payment?.ReceiptNo }} </td>
+                                        <td style="width: 15%;"> {{ payment?.PaymentDate | date: 'dd/MM/yyyy' }} </td>
+                                        <td style="width: 10%;"> {{ payment?.TotalFee | number: '1.2-2' }} <i *ngIf="isLateFee(payment)" (click)="openLateStayFeeModal($event, student)" class="fa-solid fa-circle-info secondary-color"></i></td>
+                                        <td style="cursor: default; width: 10%;">
+                                            <a *ngIf="!payment?.showSpinner" class="btn btn-rounded btn-primary btn-print-custom" style="cursor: pointer;" (click)="printTableToPDF(student, payment)">
+                                              <i class="fa fa-print fs-13"></i>
+                                            </a>
+                                            <a *ngIf="payment?.showSpinner" class="">
+                                                <i class="fa fa-spinner fa-spin" style="font-size:24px"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                </ng-template>
+                                <ng-template pTemplate="emptymessage">
+                                    <tr>
+                                        <td colspan="6" class="text-center">{{"No Payment History." | translate}}</td>
+                                    </tr>
+                                </ng-template>
+                                </p-table>
+                            </div>
+                        </div>
+                    </div>
+                    <div *ngIf="this.screenW < 999">
+                        <div class="card indiv-kid-payment mb-3" *ngFor="let payment of student?.PaymentHistory">
+                          <div class="card-body">
+                            <div class="row">
+                              <div class="col-6">
+                                <div class="form-group form-view my-2">
+                                  <span class="w-space-no" >{{ 'Fee Type' | translate }}  </span>
+                                  <label>{{ selectedLanguage == 'ar' ? payment?.FeeSetting?.FeeType?.TypeInArabic : payment?.FeeSetting?.FeeType?.Type }}</label>
+                                </div>
+                              </div>
+                              <div class="col-6 px-0">
+                                <div class="form-group form-view my-2 ">
+                                  <span  >{{ 'Payment description' | translate }} </span>
+                                  <label >{{ selectedLanguage == 'ar' ? payment?.DescriptionInArabic : payment?.Description }}</label>
+                                </div>
+                              </div>
+                              <div class="col-6">
+                                <div class="form-group form-view my-2">
+                                  <span >{{ 'Receipt Number' | translate }}  </span>
+                                  <label >{{ payment?.ReceiptNo }}</label>
+                                </div>
+                              </div>
+                              <div class="col-6 px-0">
+                                <div class="form-group form-view  my-2">
+                                  <span class="w-space-no" >{{ 'Receipt date' | translate }}  </span>
+                                  <label>{{ payment?.PaymentDate | date: 'dd/MM/yyyy' }}</label>
+                                </div>
+                              </div>
+                              <div class="col-6">
+                                <div class="form-group form-view  my-2">
+                                  <span >{{ 'Paid (AED)' | translate }}  </span>
+                                  <label >{{ payment?.TotalFee | number: '1.2-2' }} <i *ngIf="isLateFee(payment)" (click)="openLateStayFeeModal($event, student)" class="fa-solid fa-circle-info secondary-color"></i></label>
+                                </div>
+                              </div>
+                              <div class="col-6 px-0">
+                                <div class="d-flex form-group form-view my-3">
+                                  <a class="btn btn-rounded btn-primary btn-print-custom" [title]="'View' | translate" style="cursor: pointer;" (click)="printTableToPDF(student, payment)">
+                                    {{ 'View' | translate }}  <i class="fa fa-print fs-13  px-2"></i>
+                                  </a>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                </div>
+            </div>
+        </ng-container>
+
+    </ng-container>
+</div>
+<p-dialog
+    closeIcon="btn-close"
+    header="{{'Late Stay Fee' | translate}}"
+    [(visible)]="visibleLateStayFeeDetails"
+    [position]="this.screenW < 999 ? 'center': 'bottomright'"
+    [style]="this.screenW < 999 ? { width: '', height: '' } : { width: '30vw', height: '50vw' }">
+    <div>
+        <!-- <div *ngFor="let student of SelectedStudents"> -->
+            <div *ngIf="studentSelected?.lateFeePayments?.length > 0">
+                <!-- <ng-container> -->
+                    <div class="pay-now-panel-container">
+                        <div class="pay-now-panel-header">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <span>{{studentSelected?.FullNameInEnglish}}</span>
+                                </div>
+                                <div>
+                                    <span>{{studentSelected?.ClassName}}</span>
+                                    <!-- <span class="d-block text-end">Friday</span>
+                                    <span class="d-block">Checkout : <b>4:30 PM</b></span> -->
+                                </div>
+                            </div>
+                        </div>
+                        <div class="pay-now-panel-body">
+                            <p-table
+                                [value]="studentSelected?.lateFeePayments"
+                                class="table display mb-4 admin-applications-table fee-payment-table fee-payment-table-n">
+                                <ng-template pTemplate="header">
+                                    <tr>
+                                        <th> {{ 'Checkout Date' | translate }} </th>
+                                        <th> {{ 'Checkout Time' | translate }} </th>
+                                        <th> {{ 'Fee' | translate }} </th>
+                                    </tr>
+                                </ng-template>
+                                <ng-template pTemplate="body" let-payment>
+                                    <tr>
+                                        <td> {{ payment?.StudentAttendance?.AttendanceDate | date: 'dd/MM/yyyy' }} </td>
+                                        <td> {{ formatTime(payment?.StudentAttendance?.CheckOutTime) }} </td>
+                                        <td> {{ payment?.Amount }} </td>
+                                    </tr>
+                                </ng-template>
+                            </p-table>
+                            <!-- <div class="d-flex justify-content-between pb-1">
+                                <div>
+                                    <span>{{'Fee' | translate}}</span>
+                                </div>
+                                <div>
+                                    <span>{{payment?.Amount}}</span>
+                                </div>
+                            </div> -->
+                            <!-- <div class="d-flex justify-content-between">
+                                <div>
+                                    <span>Discount</span>
+                                </div>
+                                <div>
+                                    <span>0.00</span>
+                                </div>
+                            </div> -->
+                        </div>
+                        <div class="d-flex justify-content-between pay-now-panel-footer">
+                            <div>
+                                <span>Total</span>
+                            </div>
+                            <div>
+                                <span>{{getTotalForLateFee(studentSelected?.lateFeePayments)}}</span>
+                            </div>
+                        </div>
+                    </div>
+                <!-- </ng-container> -->
+            </div>
+         <!-- </div> -->
+         <!-- <button type="button" class="btn btn-rounded btn-sm btn-primary mx-2 w-100" (click)="goToPaymentScreen()">Pay {{getGrandTotal()}}</button> -->
+    </div>
+</p-dialog>

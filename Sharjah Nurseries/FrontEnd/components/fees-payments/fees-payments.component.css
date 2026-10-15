@@ -1,0 +1,413 @@
+/* .modal-wrapper {
+  background-color: rgba(0, 0, 0, 0.6);
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-contents {
+  background-color: #fff;
+  border-radius: 4px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  max-width: 400px;
+  width: 100%;
+}
+
+.modal-header {
+  background-color: #f8f9fa;
+  padding: 1rem;
+  border-top-left-radius: 4px;
+  border-top-right-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.modal-title {
+  margin: 0;
+}
+
+.modal-body {
+  padding: 1rem;
+} */
+.success-icon {
+  font-size: 3.5rem;
+  color: var(--bs-success);
+  margin-bottom: 1rem;
+}
+.body{
+  font-weight: 600;
+  font-size: 1.2rem;
+}
+.failure-icon {
+  font-size: 3.5rem;
+  color: var(--bs-danger);
+  margin-bottom: 1rem;
+}
+.table {
+  cursor: default !important;
+}
+/* .custom-receipt-container {
+    font: #ccc !important;
+} */
+.receipt-container {
+    display: flex;
+    justify-content: center;
+    border-bottom: 3px solid #ccc;
+}
+.img-logo {
+    margin-bottom: 1rem;
+    height: 150px;
+}
+.address-container {
+    display: block;
+    margin-left: 3rem;
+    margin-bottom: 1rem;
+}
+.address-lines {
+    display: inline-block;
+}
+.receipt-head {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 1rem;
+}
+.custom-box {
+    width: 100%;
+    border: 1px solid #ccc;
+    padding: 1rem;
+    border-radius: 10px;
+}
+.basic-details {
+    font-weight: bold;
+}
+.custom-table {
+    width: 100%;
+    table-layout: fixed;
+}
+.custom-table-fee {
+    border-collapse: collapse;
+    width: 100%;
+    border: 1px solid #ccc;
+    table-layout: fixed;
+}
+.custom-table-fee th,
+.custom-table-fee td {
+    border: 1px solid #ccc;
+    padding: 8px;
+    text-align: left;
+}
+.amount-column {
+    width: 15rem;
+}
+.w-100 {
+    width: 100%;
+}
+.mt-10px {
+    margin-top: 10px;
+}
+.receipt-logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.mtb-2rem {
+    margin-top: 2rem;
+    margin-bottom: 2rem;
+}
+.mt-2rem {
+    margin-top: 2rem;
+}
+.mb-10px {
+    margin-bottom: 10px;
+}
+.header-underline {
+    border-bottom: 1px solid #000;
+    font-weight: bold !important;
+    font-size: 20px;
+}
+.pl-2rem {
+    padding-left: 2rem;
+}
+.receipt-border-right {
+    border-right: 1px solid #ccc;
+}
+.receipt-border-bottom {
+    border-bottom: 1px solid #ccc;
+}
+.custom-empty-row {
+    height: 1rem;
+}
+@media (max-width: 610px){
+    .payment-h-t{
+        margin-top: 1rem;
+    }
+}
+.custom-table td {
+    word-wrap: break-word;
+}
+
+.custom-table-fee td {
+    word-wrap: break-word;
+}
+.ch-name-list{
+    display: flex;
+    align-items: center;
+}
+.ch-name-grade{
+    flex: 1;
+    display: flex;
+}
+.ch-pro-p img{
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+}
+.child-selecter{
+    cursor: pointer;
+}
+.ch-name-list-outer .ch-name-list{
+    border-bottom: solid 1px #f0f1f5;
+    cursor: pointer;
+}
+.ch-name-list-outer .ch-name-list:hover{
+    background: #FAFBFC;
+}
+.selected-child{
+    background: #FAFBFC;
+}
+.ch-name-grade label{
+    margin-bottom: 0;
+}
+.payment-sep{
+    color: #9BA7B1;
+    font-weight: 400;
+}
+.payment-c{
+    color: #9BA7B1;
+    font-size: 14px;
+    font-weight: 400;
+}
+.payment-header-n{
+    background: #FAFBFC !important;
+    border-top: 0;
+}
+.fee-payment-table-n tbody td{
+    text-align: left;
+    padding-top: 15px !important;
+    padding-bottom: 15px !important;
+}
+.fee-payment-table-n th:first-child, .fee-payment-table-n td:first-child {
+    padding-left: 15px !important;
+}
+.fee-payment-table-n th:last-child, .fee-payment-table-n td:last-child {
+    padding-right: 15px !important;
+}
+.month-range-p{
+    display: flex;
+}
+.month-range-p li label{
+    font-size: 12px;
+    display: block;
+    margin-bottom: 0;
+}
+.month-range-p li {
+   flex-grow: 1;
+   text-align: center;
+   position: relative;
+   z-index: 1;
+   padding-top: 5px;
+padding-bottom: 5px;
+}
+.month-range-p li span{
+    font-size: 10px;
+    display: block;
+    color: #AAAAAA;
+}
+.advance-payment-d {
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+    background: #fff;
+    border-bottom: solid 1px #f0f1f5;
+    border-top: solid 1px #f0f1f5;
+}
+.month-range-p li.active-month::after{
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 40px;
+    height: 40px;
+    background: #7bccc6;
+    z-index: -1;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+}
+.month-range-p li.active-month label, .month-range-p li.active-month span{
+    color: #fff;
+}
+.custom-tab-1.student-details-tab .nav-link:focus, .custom-tab-1.student-details-tab .nav-link.active {
+    color: var(--primary);
+    font-weight: 600;
+    background-color: transparent !important;
+}
+.custom-tab-1.student-details-tab .nav-link:hover {
+    background-color: transparent !important;
+}
+.student-details-tab .nav-link {
+    color: #83868a;
+}
+.mobile-view-card.select-m-card{
+    /* border: solid 1px #689DD3; */
+}
+.mobile-view-card{
+    background: #F9FAFC;
+}
+
+::ng-deep loading{
+    position: absolute;
+    z-index: 99;
+    background: white;
+    width: 100vw;
+    opacity: 0.8;
+}
+
+::ng-deep loading .lds-roller{
+    left: -10vw;
+}
+
+::ng-deep [dir="RTL"] loading .lds-roller{
+    left: unset;
+    right: -10vw;
+}
+
+@media (max-width: 999px) {
+    ::ng-deep loading .lds-roller{
+        left: unset;
+    }
+}
+
+::ng-deep .preventScrollOnLoading{
+    overflow: hidden;
+    height: 100vh;
+}
+::ng-deep .date-pick-ch .p-calendar .p-inputtext{
+    padding-bottom: 1px !important;
+    padding-top: 1px !important;
+    padding-left: 15px !important;
+    padding-right: 15px !important;
+    border: 0.0625rem solid #c2c2c2 !important;
+}
+::ng-deep .date-pick-ch .p-calendar .p-inputtext:hover{
+    border: 0.0625rem solid var(--primary) !important;
+}
+::ng-deep .date-pick-ch .p-calendar button{
+    padding: 0 !important;
+    color: #c2c2c2;
+    border: 1px solid #c2c2c2;
+    background: #fff;
+}
+.export-to-excel-icon {
+    cursor: pointer;
+    color: var(--primary);
+}
+
+.export-to-excel-icon:hover {
+    color: var(--secondary);
+}
+@media screen and (max-width: 900px){
+
+    ::ng-deep table{
+      table-layout: unset !important;
+    }
+
+}
+::ng-deep .call-center-table .p-datatable-wrapper{
+    border-bottom: 1px solid #dee2e6 !important;
+}
+::ng-deep .custom-modal-loader .lds {
+    height: 34vh !important;
+    width: 56% !important;
+}
+::ng-deep .custom-modal-loader .lds .lds-roller {
+    left: 1vw;
+}
+
+#printPreviewHiddenContainer{
+    position: relative;
+    top: 10000px;
+}
+.flex-wrap-no-wrap {
+    flex-wrap: nowrap;
+}
+
+.payment-tabs.nav-tabs {
+    display: flex;
+    flex: 1 1 auto;
+    flex-wrap: nowrap;
+    min-width: 0;
+    margin: 0;
+    overflow-x: auto;
+    overflow-y: hidden;
+    border-bottom: 0;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+}
+
+.payment-tabs.nav-tabs::-webkit-scrollbar {
+    display: none;
+}
+
+.payment-tabs .nav-item {
+    flex: 0 0 auto;
+}
+
+::ng-deep .payment-tabs .nav-link {
+    position: relative;
+    min-height: 42px;
+    margin: 0 !important;
+    padding: 0.65rem 0.9rem !important;
+    border: 0 !important;
+    border-radius: 10px 10px 0 0;
+    color: #1f2937;
+    background: none;
+    font-weight: 500;
+    white-space: nowrap;
+    cursor: pointer;
+}
+
+::ng-deep .payment-tabs .nav-link:hover,
+::ng-deep .payment-tabs .nav-link:focus {
+    color: #5593d9;
+    background: transparent !important;
+}
+
+::ng-deep .payment-tabs .nav-link.active {
+    color: #397fc4;
+    background: linear-gradient(180deg, rgba(228, 247, 245, 0.55), rgba(228, 242, 255, 0.62)) !important;
+}
+
+::ng-deep .payment-tabs .nav-link.active::after {
+    content: "";
+    position: absolute;
+    right: 0.75rem;
+    bottom: 0;
+    left: 0.75rem;
+    height: 2px;
+    border-radius: 999px;
+    background: linear-gradient(90deg, #49cec3, #5691df);
+}
+
+@media (max-width: 767px) {
+    ::ng-deep .payment-tabs .nav-link {
+        min-height: 40px;
+        padding: 0.6rem 0.75rem !important;
+        font-size: 0.8rem;
+    }
+}

@@ -1,0 +1,56 @@
+.container {
+    
+    height: 100vh; /* Set the container height to full viewport height */
+  }
+  
+  .card {
+    display: flex;
+    flex-direction: column;
+    max-height: 795px;
+    align-items: center;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    height: 100%; /* Set the card height to match the container */
+  }
+  
+  #telr {
+    width: 100%;
+    /* min-width: 600px; */
+    height: 100vh;/*calc(100vh - 198px);*/
+    border: 0;
+    max-height: 777px;
+    overflow: hidden; /* Hide any scrollbars within the iframe */
+  }
+  #telr .container {
+    width: 100% !important;
+   
+  }
+  .frame-body{
+ background: #fff;
+  border-radius: .684rem;
+
+  }
+
+.jumbotron{
+    background:#689dd3; 
+    padding-right: 30px;
+    padding-left: 30px;
+    border: none;
+    border-radius: 4px;
+    color: #ffffff;
+    /* #ffffff00; */
+    /* background: linear-gradient(0deg, rgba(122, 204, 198, 1) 0%, rgba(104, 157, 211, 1) 76%); */
+/*     color: #5ec6cd; */
+}
+
+.jumbotron #pay_total{
+    font-weight: bold;
+}
+
+.jumbotron p {
+  font-size: 1.1rem;
+  margin-bottom: 10px;
+  padding: 15px 0px;
+  margin-left: -15px;
+}

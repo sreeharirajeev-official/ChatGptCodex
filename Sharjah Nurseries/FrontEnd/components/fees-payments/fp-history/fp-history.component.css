@@ -1,0 +1,78 @@
+.ch-name-list{
+    display: flex;
+    align-items: center;
+}
+.ch-name-grade{
+    flex: 1;
+    display: flex;
+}
+.ch-pro-p img{
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+}
+.child-selecter{
+    cursor: pointer;
+}
+.ch-name-list-outer .ch-name-list{
+    border-bottom: solid 1px #f0f1f5;
+    cursor: pointer;
+}
+.ch-name-list-outer .ch-name-list:hover{
+    background: #FAFBFC;
+}
+.selected-child{
+    background: #FAFBFC;
+}
+.ch-name-grade label{
+    margin-bottom: 0;
+}
+.payment-sep{
+    color: #9BA7B1;
+    font-weight: 400;
+}
+.payment-c{
+    color: #9BA7B1;
+    font-size: 14px;
+    font-weight: 400;
+}
+.payment-header-n{
+    background: #FAFBFC !important;
+    border-top: 0;
+}
+.fee-payment-table-n tbody td{
+    text-align: left;
+    padding-top: 15px !important;
+    padding-bottom: 15px !important;
+}
+.fee-payment-table-n th:first-child, .fee-payment-table-n td:first-child {
+    padding-left: 15px !important;
+}
+.fee-payment-table-n th:last-child, .fee-payment-table-n td:last-child {
+    padding-right: 15px !important;
+}
+
+::ng-deep .fee-payment-table-n .p-datatable-tbody{
+    font-family: 'poppins', sans-serif !important;
+}
+::ng-deep .fee-payment-table-n .p-datatable-thead tr th{
+    background: #FAFBFC !important;
+    border-top: 0;
+    color: #2a2a2a !important;
+    font-weight: 600 !important;
+    font-size: 15px !important;
+}
+.btn-print-custom {
+    padding: 0.325rem 0.676rem !important;
+}
+.btn-print-custom {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .indiv-kid-payment{
+    border: 1px solid #cecece;
+    margin: 10px;
+    border-radius: 15px;
+    overflow: hidden;
+}

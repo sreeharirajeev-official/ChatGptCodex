@@ -1,0 +1,23 @@
+<div
+    [hidden]="!(this.iframeObserver$ | async) || showLoader"
+    class="col-xl-12"
+    [@loadingAnimation]
+>
+    <div class="container-fluid">
+        <div class="row m-0">
+            <div class="col-12 py-5 frame-body">
+
+                <div class="content_header">
+                    <div class="jumbotron">
+                      <p id="currency" class="amount"> {{ 'Pay' | translate }} <span id="pay_total">AED {{data?.amount}}</span>&nbsp;<span class="mName3"> {{ 'to SHARJAH NURSERIES' | translate }} </span></p>
+                    </div>
+                </div>
+
+                <iframe id="telr" [src]="paymenturl" #iframe></iframe>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="position-relative w-100" style="height:100vh">
+    <loading *ngIf="!(this.iframeObserver$ | async) || showLoader"></loading>
+</div>
