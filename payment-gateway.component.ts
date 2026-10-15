@@ -1,128 +1,45 @@
-import { animate, style, transition, trigger } from '@angular/animations';
-import {
-    Component,
-    ElementRef,
-    OnInit,
-    ViewChild,
-    AfterViewInit,
-    HostListener,
-    OnDestroy,
-} from '@angular/core';
-import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
-import { Navigation, Router } from '@angular/router';
-import { Observable, Observer } from 'rxjs';
+import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 
 @Component({
     selector: 'app-payment-gateway',
     templateUrl: './payment-gateway.component.html',
     styleUrls: ['./payment-gateway.component.css'],
-    animations: [
-        trigger('loadingAnimation', [
-            transition(':enter', [
-                style({ opacity: 0 }),
-                animate('80ms', style({ opacity: 1 })),
-            ]),
-        ]),
-    ],
 })
-export class PaymentGatewayComponent implements OnInit, AfterViewInit {
-    paymenturl: any;
-    iframeLoaded: boolean = false;
-    showLoader = true;
-    @ViewChild('iframe', { static: false })
-    iFrame!: ElementRef<HTMLIFrameElement>;
-    iframeObserver$: Observable<boolean>;
-    data: any;
-    constructor(private sanitizer: DomSanitizer, private router: Router) {
-        // setTimeout(() => {
-        //     this.showLoader = false;
-        // }, 1000);
-        const navigation: Navigation | null =
-            this.router.getCurrentNavigation();
-        if (navigation && navigation.extras.state) {
-            const customData: any = navigation.extras.state as {
-                [key: string]: any;
-            };
+export class PaymentGatewayComponent implements OnInit {
+    private readonly data: any;
 
-            this.data = customData?.data;
-
-            this.paymenturl = customData.data.TransactionUrl;
-            this.paymenturl = this.getSafeUrl(this.paymenturl);
-        }
-        else {
-            let queryParams = {status: 'Reload'};
-            this.router.navigate(['/home/parent/fees'], {
-                queryParams: queryParams,
-                replaceUrl: true
-            });
-        }
+    constructor(private router: Router) {
+        this.data = this.router.getCurrentNavigation()?.extras.state?.['data'];
     }
 
-    ngOnInit() {}
-    ngAfterViewInit() {
-        const iframe = this.iFrame.nativeElement;
+    ngOnInit(): void {
+        try {
+            const url = new URL(this.data?.TransactionUrl);
+            // Only allow Telr-hosted HTTPS checkout, never arbitrary router URLs.
+            if (url.protocol !== 'https:' || url.username || url.password ||
+                (url.port && url.port !== '443') ||
+                !(url.hostname === 'telr.com' || url.hostname.endsWith('.telr.com'))) {
+                throw new Error('Invalid payment gateway URL');
+            }
+            if (!this.data?.telrRefNo || !this.data?.paymentIds?.length ||
+                !this.data?.KidInfoIds?.length || !this.data?.parentId) {
+                throw new Error('Missing payment context');
+            }
 
-        this.iframeObserver$ = new Observable((observer: Observer<boolean>) => {
-            observer.next(false);
-            const onLoad = (event: Event) => {
-                observer.next(true);
-                observer.complete();
-                this.showLoader = false;
-            };
-
-            iframe.addEventListener('load', onLoad);
-
-            return () => iframe.removeEventListener('load', onLoad);
-        });
-    }
-    getSafeUrl(url: string): SafeResourceUrl {
-        return this.sanitizer.bypassSecurityTrustResourceUrl(url);
-    }
-
-    @HostListener('window:message', ['$event'])
-    handleIframeMessage(event: MessageEvent): void {
-        // let contentWindow=this.iFrame?.nativeElement?.contentWindow;
-        // if (event.source === this.iFrame?.nativeElement.contentWindow || (contentWindow!=null &&
-        //     contentWindow?.length>0 && event.source === contentWindow[0])) {
-            // if (event.data && event.data === 'Payment Redirect') {
-            //     const receivedData = event.data;
-            //     this.router.navigate(['/home/parent/fees'], {
-            //         state: {
-            //             data: {
-            //                 ...(this.data ?? {}),
-            //                 status: 'redirect',
-            //             },
-            //         },
-            //     });
-            // }
-        // }
-
-        if(event.data === 'Payment Successful'){
+            // Keep only the identifiers needed for server-side status verification.
+            // Router state alone is lost when leaving the application.
+            sessionStorage.setItem('telr.pendingPayment', JSON.stringify({
+                telrRefNo: this.data.telrRefNo,
+                paymentIds: this.data.paymentIds,
+                KidInfoIds: this.data.KidInfoIds,
+                parentId: this.data.parentId,
+            }));
+            window.location.assign(url.href);
+        } catch {
             this.router.navigate(['/home/parent/fees'], {
-                state: {
-                    data: {
-                        ...(this.data ?? {}),
-                        status: 'success',
-                    },
-                },
-            });
-        } else if(event.data === 'Payment Declined'){
-            this.router.navigate(['/home/parent/fees'], {
-                state: {
-                    data: {
-                        ...(this.data ?? {}),
-                        status: 'declined',
-                    },
-                },
-            });
-        } else if(event.data === 'Payment Canceled'){
-            this.router.navigate(['/home/parent/fees'], {
-                state: {
-                    data: {
-                        ...(this.data ?? {}),
-                        status: 'canceled',
-                    },
-                },
+                queryParams: { status: 'Reload' },
+                replaceUrl: true,
             });
         }
     }

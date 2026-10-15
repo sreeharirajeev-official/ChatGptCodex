@@ -192,6 +192,21 @@ export class FeesPaymentsComponent implements OnInit, OnDestroy {
         // }
     }
     ngOnInit() {
+        // A full-page checkout loses Angular router state. On return (or Back),
+        // verify the saved order with the backend; browser state is not proof of payment.
+        if (!this.route.snapshot.queryParamMap.has('telrRefNo')) {
+            const pendingPayment = sessionStorage.getItem('telr.pendingPayment');
+            if (pendingPayment) {
+                try {
+                    const context = JSON.parse(pendingPayment);
+                    if (Number(context.parentId) === Number(this.loggedInUserId)) {
+                        this.checkOrderStatus(context);
+                    }
+                } catch {
+                    sessionStorage.removeItem('telr.pendingPayment');
+                }
+            }
+        }
         this.route.queryParams.subscribe((params) => {
             if (params['telrRefNo']) {
                 this.showLoader = false;
@@ -550,13 +565,16 @@ export class FeesPaymentsComponent implements OnInit, OnDestroy {
             // this.showLoader = false;
             let checkStatusData = {
                 telrRefNo: this.orderRefNo,
-                paymentId: paymentId[0],
-                kidInfoId: kidInfoId[0],
+                paymentId: Array.isArray(paymentId) ? paymentId[0] : paymentId,
+                kidInfoId: Array.isArray(kidInfoId) ? kidInfoId[0] : kidInfoId,
                 parentId: parentId,
             };
             this.service
                 .checkPaymentStatus(checkStatusData)
                 .subscribe((res) => {
+                    if (res === 'Paid') {
+                        sessionStorage.removeItem('telr.pendingPayment');
+                    }
                     // this.checkingStatus = false;
                     if (res == 'Paid') {
                         // this.modalService.open(this.paymentSuccessModalRef, {
